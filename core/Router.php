@@ -78,7 +78,14 @@ class Router
             print("404 Not Found");
         }
     }
-
+    /**
+     * Renderiza un layout con el contenido proporcionado.
+     * 
+     * @param string $layout Nombre del archivo de layout (sin extensión).
+     * @param string $content Contenido a ser insertado en el layout.
+     * @throws InvalidArgumentException Si el archivo de layout no existe.
+     * @return void
+     */
     public static function renderLayout(string $layout, string $content): void
     {
         $layoutFile = $_SERVER['DOCUMENT_ROOT'] . '/app/layouts/' . $layout . '.php';
@@ -98,13 +105,14 @@ class Router
      * @param string $method Método HTTP (GET, POST, PUT, DELETE)
      * @param string $uri URI de la ruta.
      * @param array $routeDefinition Definición del controlador para la ruta.
-     * @return void
+     * @return Route La instancia de la ruta añadida.
      */
-    public static function addRoute(string $method, string $uri, array $routeDefinition): void
+    public static function addRoute(string $method, string $uri, array $routeDefinition): Route
     {
         $uri = trim($uri, '/');
         $route = new Route($routeDefinition);
         self::$routes[strtoupper($method)][$uri] = $route;
+        return $route;
     }
 
     /** 
@@ -112,13 +120,11 @@ class Router
      * 
      * @param string $uri URI de la ruta.
      * @param array $routeDefinition Definición del controlador para la ruta.
-     * @return void
+     * @return Route La instancia de la ruta añadida.
      */
-    public static function get(string $uri, array $routeDefinition): void
+    public static function get(string $uri, array $routeDefinition): Route
     {
-        $uri = trim($uri, '/');
-        $route = new Route($routeDefinition);
-        self::$routes['GET'][$uri] = $route;
+        return self::addRoute('GET', $uri, $routeDefinition);
     }
 
     /** 
@@ -126,13 +132,11 @@ class Router
      * 
      * @param string $uri URI de la ruta.
      * @param array $routeDefinition Definición del controlador para la ruta.
-     * @return void
+     * @return Route La instancia de la ruta añadida.
      */
-    public static function post(string $uri, array $routeDefinition): void
+    public static function post(string $uri, array $routeDefinition): Route
     {
-        $uri = trim($uri, '/');
-        $route = new Route($routeDefinition);
-        self::$routes['POST'][$uri] = $route;
+        return self::addRoute('POST', $uri, $routeDefinition);
     }
 
     /**
@@ -140,27 +144,23 @@ class Router
      * 
      * @param string $uri URI de la ruta.
      * @param array $routeDefinition Definición del controlador para la ruta.
-     * @return void
+     * @return Route La instancia de la ruta añadida.
      */
-    public static function put(string $uri, array $routeDefinition): void
+    public static function put(string $uri, array $routeDefinition): Route
     {
-        $uri = trim($uri, '/');
-        $route = new Route($routeDefinition);
-        self::$routes['PUT'][$uri] = $route;
+        return self::addRoute('PUT', $uri, $routeDefinition);
     }
 
-    /**
+    /** 
      * Añade una ruta DELETE. 
      * 
      * @param string $uri URI de la ruta.
      * @param array $routeDefinition Definición del controlador para la ruta.
-     * @return void
+     * @return Route La instancia de la ruta añadida.
      */
-    public static function delete(string $uri, array $routeDefinition): void
+    public static function delete(string $uri, array $routeDefinition): Route
     {
-        $uri = trim($uri, '/');
-        $route = new Route($routeDefinition);
-        self::$routes['DELETE'][$uri] = $route;
+        return self::addRoute('DELETE', $uri, $routeDefinition);
     }
 
     /** 
