@@ -2,32 +2,34 @@
 
 namespace Core;
 
-class Route {
+/**
+ * Clase Route
+ * 
+ * Esta clase representa una ruta dentro de la aplicación.
+ * Puede manejar tanto controladores y métodos como callbacks anónimos.
+ */
+class Route
+{
     /**
-     * @var string $controller Nombre del controlador asociado a la ruta.
+     * @var array|callable $handler
+     * Controlador y método o callback anónimo asociado a la ruta.
      */
-    public string $controller;
+    public $handler;
 
     /**
-     * @var string $method Nombre del método del controlador asociado a la ruta.
+     * @var string|null $layout
+     * Layout opcional para la ruta.
      */
-    public string $method;
+    public ?string $layout = null;
 
     /**
-     * @var string|null $layout Nombre del layout asociado a la ruta, o null si no se especifica.
-     */
-    public ?string $layout;
-
-    /**
-     * Constructor de la clase.
+     * Constructor de la clase Route.
      * 
-     * @param array $routeDefinition Definición de la ruta, que incluye el controlador, el método y opcionalmente el layout.
+     * @param array|callable $handler Controlador y método o callback anónimo.
      */
-    public function __construct(array $routeDefinition)
+    public function __construct(array|callable $handler)
     {
-        $this->controller = $routeDefinition[0];
-        $this->method = $routeDefinition[1];
-        $this->layout = $routeDefinition[2] ?? null; // Valor predeterminado
+        $this->handler = $handler;
     }
 
     /**

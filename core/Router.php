@@ -46,22 +46,27 @@ class Router
 
             // Convertir la ruta en un patrón de expresión regular 
             $pattern = preg_replace('/:[^\/]+/', '([^/]+)', $route);
-            if (preg_match("#^$pattern$#", $uri, $matches)) {
-                array_shift($matches);
+            if (preg_match("#^$pattern$#", $uri, $params)) {
+                array_shift($params);
 
                 // Extraemos las definiciones de la ruta 
-                $controllerClass = $routeObject->controller;
-                $controllerMethod = $routeObject->method;
+                $handler = $routeObject->handler;
                 $layout = $routeObject->layout ?? null;
 
-                if (!method_exists($controllerClass, $controllerMethod)) {
-                    throw new InvalidArgumentException("El método $controllerMethod no existe en el controlador $controllerClass");
+                if (is_callable($handler)) {
+                    $content = call_user_func_array($handler, $params);
+                } else {
+                    [$controllerClass, $controllerMethod] = $handler;
+
+                    if (!method_exists($controllerClass, $controllerMethod)) {
+                        throw new InvalidArgumentException("El método $controllerMethod no existe en el controlador $controllerClass");
+                    }
+
+                    // Obtener el contenido renderizado del controlador
+                    $content = call_user_func_array([$controllerClass, $controllerMethod], $params);
                 }
 
-                // Obtener el contenido renderizado del controlador
-                $content = call_user_func_array([$controllerClass, $controllerMethod], $matches);
-
-                // Rederizar el layout con el contenido si hay un layout
+                // Renderizar el layout con el contenido si hay un layout
                 if ($layout) {
                     self::renderLayout($layout, $content);
                 } else {
@@ -78,6 +83,7 @@ class Router
             print("404 Not Found");
         }
     }
+    
     /**
      * Renderiza un layout con el contenido proporcionado.
      * 
@@ -104,13 +110,13 @@ class Router
      * 
      * @param string $method Método HTTP (GET, POST, PUT, DELETE)
      * @param string $uri URI de la ruta.
-     * @param array $routeDefinition Definición del controlador para la ruta.
+     * @param callable|array $handler Definición del controlador para la ruta.
      * @return Route La instancia de la ruta añadida.
      */
-    public static function addRoute(string $method, string $uri, array $routeDefinition): Route
+    public static function addRoute(string $method, string $uri, callable|array $handler): Route
     {
         $uri = trim($uri, '/');
-        $route = new Route($routeDefinition);
+        $route = new Route($handler);
         self::$routes[strtoupper($method)][$uri] = $route;
         return $route;
     }
@@ -119,48 +125,48 @@ class Router
      * Añade una ruta GET.
      * 
      * @param string $uri URI de la ruta.
-     * @param array $routeDefinition Definición del controlador para la ruta.
+     * @param callable|array $handler Definición del controlador para la ruta.
      * @return Route La instancia de la ruta añadida.
      */
-    public static function get(string $uri, array $routeDefinition): Route
+    public static function get(string $uri, callable|array $handler): Route
     {
-        return self::addRoute('GET', $uri, $routeDefinition);
+        return self::addRoute('GET', $uri, $handler);
     }
 
     /** 
      * Añade una ruta POST. 
      * 
      * @param string $uri URI de la ruta.
-     * @param array $routeDefinition Definición del controlador para la ruta.
+     * @param callable|array $handler Definición del controlador para la ruta.
      * @return Route La instancia de la ruta añadida.
      */
-    public static function post(string $uri, array $routeDefinition): Route
-    {
-        return self::addRoute('POST', $uri, $routeDefinition);
+    public static function post(string $uri, callable|array $handler): Route
+    { 
+        return self::addRoute('POST', $uri, $handler);
     }
 
     /**
      * Añade una ruta PUT.
      * 
      * @param string $uri URI de la ruta.
-     * @param array $routeDefinition Definición del controlador para la ruta.
+     * @param callable|array $handler Definición del controlador para la ruta.
      * @return Route La instancia de la ruta añadida.
      */
-    public static function put(string $uri, array $routeDefinition): Route
+    public static function put(string $uri, callable|array $handler): Route
     {
-        return self::addRoute('PUT', $uri, $routeDefinition);
+        return self::addRoute('PUT', $uri, $handler);
     }
 
     /** 
      * Añade una ruta DELETE. 
      * 
      * @param string $uri URI de la ruta.
-     * @param array $routeDefinition Definición del controlador para la ruta.
+     * @param callable|array $handler Definición del controlador para la ruta.
      * @return Route La instancia de la ruta añadida.
      */
-    public static function delete(string $uri, array $routeDefinition): Route
+    public static function delete(string $uri, callable|array $handler): Route
     {
-        return self::addRoute('DELETE', $uri, $routeDefinition);
+        return self::addRoute('DELETE', $uri, $handler);
     }
 
     /** 
