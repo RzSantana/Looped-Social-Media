@@ -1,0 +1,17 @@
+# 1. Redirige cualquier solicitud al directorio public, ocultando su existencia en la URL.
+# 2. Si se solicita un archivo estático (como una imagen, JS o CSS) que existe en el directorio public, el servidor lo entrega directamente.
+# 3. Si no se encuentra el archivo solicitado, todas las solicitudes pasan a public/index.php.
+
+# Redirigir todas las solicitudes al directorio public
+RewriteEngine On
+
+# Redirige automáticamente la raíz del proyecto al directorio public
+RewriteCond %{REQUEST_URI} !^/public/
+RewriteRule ^(.*)$ /public/$1 [L]
+
+# Si el archivo o directorio existe, se sirve normalmente
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+
+# Si no existe, redirige todas las solicitudes al framework
+RewriteRule ^(.*)$ /public/index.php [L]
