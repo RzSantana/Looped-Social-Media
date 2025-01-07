@@ -52,7 +52,7 @@ class Router
                 // Extraemos las definiciones de la ruta 
                 $controllerClass = $routeObject->controller;
                 $controllerMethod = $routeObject->method;
-                $layout = $routeObject->layout;
+                $layout = $routeObject->layout ?? null;
 
                 if (!method_exists($controllerClass, $controllerMethod)) {
                     throw new InvalidArgumentException("El método $controllerMethod no existe en el controlador $controllerClass");
@@ -61,8 +61,12 @@ class Router
                 // Obtener el contenido renderizado del controlador
                 $content = call_user_func_array([$controllerClass, $controllerMethod], $matches);
 
-                // Rederizar el layout con el contenido
-                self::renderLayout($layout, $content);
+                // Rederizar el layout con el contenido si hay un layout
+                if ($layout) {
+                    self::renderLayout($layout, $content);
+                } else {
+                    print($content);
+                }
                 return;
             }
         }
@@ -71,7 +75,7 @@ class Router
             call_user_func(self::$notFoundCallback);
         } else {
             http_response_code(404);
-            echo "404 Not Found";
+            print("404 Not Found");
         }
     }
 

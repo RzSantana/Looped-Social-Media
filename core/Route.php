@@ -5,7 +5,7 @@ namespace Core;
 class Route {
     public string $controller;
     public string $method;
-    public string $layout;
+    public ?string $layout;
     
     /**
      * Class constructor.
@@ -14,7 +14,7 @@ class Route {
     {
         $this->controller = $routeDefinition[0];
         $this->method = $routeDefinition[1];
-        $this->layout = 'layoutMain'; // Valor predeterminado
+        $this->layout = $routeDefinition[2] ?? null; // Valor predeterminado
     }
 
     public function layout(string $layout): self
