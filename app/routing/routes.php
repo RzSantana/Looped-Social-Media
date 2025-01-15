@@ -7,16 +7,18 @@ use Core\Routing\Router;
 
 // Rutas públicas
 Router::get('/login', [AuthController::class, 'showLoginForm'])
-    ->layout('main');
+    ->layout('auth');
 Router::post('/login', [AuthController::class, 'login']);
 Router::get('/logout', [AuthController::class, 'logout']);
 
+Router::get('/register', function () {
+    return 'Register';
+})->layout('auth');
+
 // Rutas protegidas
-Router::get('/', function() {
+Router::get('/', function () {
     return 'Hello ' . $_SESSION['user_name'];
-})
-    ->layout('main')
-    ->middleware(AuthMiddleware::class);
+})->layout('main')->middleware(AuthMiddleware::class);
 
 // Cualquier otra ruta protegida seguiría el mismo patrón
 // Router::get('/profile', [ProfileController::class, 'show'])
