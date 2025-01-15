@@ -22,6 +22,8 @@ class Route
      */
     public ?string $layout = null;
 
+    private ?string $middleware = null;
+
     /**
      * Constructor de la clase Route.
      * 
@@ -42,5 +44,17 @@ class Route
     {
         $this->layout = $layout;
         return $this;
+    }
+
+    
+    public function middleware(string $middleware): self
+    {
+        $this->middleware = $middleware;
+        return $this;
+    }
+
+    public function getMiddleware(): ?string
+    {
+        return $this->middleware;
     }
 }

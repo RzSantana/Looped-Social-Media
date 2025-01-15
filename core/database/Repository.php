@@ -2,7 +2,6 @@
 
 namespace Core\Database;
 
-use Core\Routing\DataBase;
 
 /**
  * Clase base abstracta para implementar el patrón Repository.
@@ -39,7 +38,7 @@ abstract class Repository
     public function find(int $id): ?array
     {
         $query = "SELECT * FROM " . $this->table . " WHERE " . $this->primaryKey . " = :id LIMIT 1";
-        $result = Database::select($query, ['id' => $id]);
+        $result = DataBase::select($query, ['id' => $id]);
         return $result ? $result[0] : null;
     }
 

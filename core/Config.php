@@ -39,7 +39,7 @@ class Config
      */
     public static function get(string $key, mixed $default): mixed
     {
-        if (self::$loaded) {
+        if (!self::$loaded) {
             self::loadEnvFile();
         }
 

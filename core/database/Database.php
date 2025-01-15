@@ -3,7 +3,7 @@
 namespace Core\Database;
 
 use Core\App;
-use Core\Exceptons\DatabaseExpection;
+use Core\Exceptions\DatabaseException;
 use PDO;
 use PDOException;
 
@@ -34,19 +34,6 @@ class DataBase
     private static ?PDO $connection = null;
 
     /**
-     * Configuración de la conexión a la base de datos
-     * 
-     * @var array<string, string>
-     */
-    private static array $config = [
-        'host' => App::env('DB_HOST'),
-        'dbname' => App::env('DB_NAME'),
-        'user' => App::env('DB_USER'),
-        'password' => App::env('DB_PASS'),
-        'charset' => 'utf8mb4'
-    ];
-
-    /**
      * Obtiene la conexión a la base de datos, creándola si no existe.
      * 
      * Este método implementa el patrón Singleton para asegurar que solo existe
@@ -59,17 +46,29 @@ class DataBase
     {
         if (self::$connection === null) {
             try {
-                $dsn = sprintf(
-                    "mysql:host=%s;dbname=%s;charset=%s",
-                    self::$config['host'],
-                    self::$config['dbname'],
-                    self::$config['charset']
-                );
+                // Obtenemos y verificamos los valores de configuración
+                $host = App::env('DB_HOST');
+                $dbname = App::env('DB_NAME');
+                $user = App::env('DB_USER');
+                $pass = App::env('DB_PASS');
+
+                // Verificamos que tengamos todos los valores necesarios
+                if (empty($host) || empty($dbname) || empty($user)) {
+                    throw new DatabaseException(
+                        "Configuración de base de datos incompleta. " .
+                            "Verifica que el archivo .env contenga todas las variables necesarias.\n" .
+                            "HOST: " . $host . "\n" .
+                            "DB: " . $dbname . "\n" .
+                            "USER: " . $user
+                    );
+                }
+
+                $dsn = "mysql:host=" . $host . ";dbname=" . $dbname . ";charset=utf8mb4";
 
                 self::$connection = new PDO(
                     $dsn,
-                    self::$config['user'],
-                    self::$config['password'],
+                    $user,
+                    $pass,
                     [
                         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
                         PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
@@ -77,7 +76,7 @@ class DataBase
                     ]
                 );
             } catch (PDOException $exception) {
-                throw new DatabaseExpection("Error de conexión: " . $exception->getMessage());
+                throw new DatabaseException("Error de conexión: " . $exception->getMessage());
             }
 
             return self::$connection;
@@ -107,7 +106,7 @@ class DataBase
             $stmt->execute($params);
             return $stmt->fetchAll();
         } catch (PDOException $exception) {
-            throw new DatabaseExpection("Error en la consulta: " . $exception->getMessage());
+            throw new DatabaseException("Error en la consulta: " . $exception->getMessage());
         }
     }
 
@@ -135,7 +134,7 @@ class DataBase
             $stmt->execute($params);
             return self::getConnection()->lastInsertId();
         } catch (PDOException $exception) {
-            throw new DatabaseExpection("Error en la inserción: " . $exception->getMessage());
+            throw new DatabaseException("Error en la inserción: " . $exception->getMessage());
         }
     }
 
@@ -162,7 +161,7 @@ class DataBase
             $stmt->execute($params);
             return $stmt->rowCount();
         } catch (PDOException $exception) {
-            throw new DatabaseExpection("Error en actualización: " . $exception->getMessage());
+            throw new DatabaseException("Error en actualización: " . $exception->getMessage());
         }
     }
 
@@ -189,7 +188,7 @@ class DataBase
             $stmt->execute($params);
             return $stmt->rowCount();
         } catch (PDOException $exception) {
-            throw new DatabaseExpection("Error en la eliminacion: " . $exception->getMessage());
+            throw new DatabaseException("Error en la eliminacion: " . $exception->getMessage());
         }
     }
 

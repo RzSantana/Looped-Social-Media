@@ -3,41 +3,42 @@
 namespace Core;
 
 use Exception;
+use ReflectionClass;
 
 /**
- * Clase base abstracta para todos los controladores.
+ * Clase base abstracta para todos los controladores
  */
 abstract class Controller
 {
     /**
-     * Renderiza una plantilla con los datos proporcionados.
+     * Renderiza una vista con los datos proporcionados
      * 
-     * @param string $template Nombre de la plantilla (sin extensión).
-     * @param array $data Datos a ser extraídos y utilizados en la plantilla.
-     * @throws Exception Si la plantilla no se encuentra.
-     * @return string El contenido renderizado de la plantilla.
+     * Este método busca las vistas en el directorio del módulo que las solicita.
+     * Por ejemplo, si AuthController llama a view('views/login'), buscará en:
+     * /app/features/Auth/views/login.view.php
      */
-    private static function render(string $template, array $data): string {
-        $file = $_SERVER['DOCUMENT_ROOT'] . '/app/views/' . $template . '.php';
+    protected static function view(string $template, array $data = []): string 
+    {
+        // Obtenemos la clase que llamó a view()
+        $callingClass = static::class;
+        
+        // Usamos Reflection para obtener el directorio del módulo
+        $reflection = new ReflectionClass($callingClass);
+        $classPath = dirname($reflection->getFileName());
+        
+        // Construimos la ruta completa a la vista
+        $viewPath = $classPath . '/' . $template . '.view.php';
 
-        if (file_exists($file)) {
-            extract($data);
-            ob_start();
-            require_once($file);
-            return ob_get_clean();
-        } else {
-            throw new Exception("Plantilla no encontrada: $template");
+        if (!file_exists($viewPath)) {
+            throw new Exception("Vista no encontrada: $template en $viewPath");
         }
-    }
 
-    /**
-     * Devuelve la vista renderizada.
-     * 
-     * @param string $viewName Nombre de la vista (sin extensión).
-     * @param array $data Datos a ser extraídos y utilizados en la vista.
-     * @return string El contenido renderizado de la vista.
-     */
-    protected static function view(string $viewName, array $data = []): string {
-        return self::render($viewName, $data);
+        // Extraemos las variables para que estén disponibles en la vista
+        extract($data);
+        
+        // Capturamos la salida de la vista
+        ob_start();
+        require $viewPath;
+        return ob_get_clean();
     }
 }

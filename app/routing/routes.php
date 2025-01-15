@@ -1,28 +1,24 @@
 <?php
 
+use App\Controllers\HomeController;
+use App\Features\Auth\AuthController;
+use Core\Auth\AuthMiddleware;
 use Core\Routing\Router;
 
-Router::get('/', function () {
-    return "<h1>Main</h1>";
-});
+// Rutas públicas
+Router::get('/login', [AuthController::class, 'showLoginForm'])
+    ->layout('main');
+Router::post('/login', [AuthController::class, 'login']);
+Router::get('/logout', [AuthController::class, 'logout']);
 
-Router::get('/login', function () {
-    return "<h1>Login</h1>";
-});
+// Rutas protegidas
+Router::get('/', function() {
+    return 'Hello ' . $_SESSION['user_name'];
+})
+    ->layout('main')
+    ->middleware(AuthMiddleware::class);
 
-Router::get('user/:name', function(string $name) {
-    return "<h1>User $name</h1>";
-});
-
-Router::setNotFoundCallback(function () {
-    print "Página no encotrada (404)"; // TODO: Cambinar a retorno de string's o view's 
-});
-
-/**
- * Router::get('/login')
- *  ->name('login')
- *  ->prefix('/public')
- *  ->middleware([AuthMiddleware::class])
- *  ->layout('layoutMain') 
- *  ->action(HomeController::class, 'index')
- */
+// Cualquier otra ruta protegida seguiría el mismo patrón
+// Router::get('/profile', [ProfileController::class, 'show'])
+//     ->layout('main')
+//     ->middleware(AuthMiddleware::class);

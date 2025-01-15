@@ -25,6 +25,8 @@ class Router
      */
     private static $notFoundCallback;
 
+    private static array $middleware = [];
+
     /**
      * Procesa la solicitud HTTP actual.
      * 
@@ -35,6 +37,15 @@ class Router
      */
     public static function processRequest(): void
     {
+        if (session_status() == PHP_SESSION_NONE) {
+            // Configuraciones de seguridad adicionales
+            ini_set('session.use_strict_mode', 1);
+            ini_set('session.cookie_httponly', 1);
+            ini_set('session.use_only_cookies', 1);
+
+            session_start();
+        }
+        
         $method = $_SERVER['REQUEST_METHOD'];
         $uri = trim(strtok($_SERVER['REQUEST_URI'], '?'), '/');
 
@@ -48,6 +59,12 @@ class Router
             $pattern = preg_replace('/:[^\/]+/', '([^/]+)', $route);
             if (preg_match("#^$pattern$#", $uri, $params)) {
                 array_shift($params);
+
+                // Si la ruta tiene middleware, lo ejecutamos
+                if ($middleware = $routeObject->getMiddleware()) {
+                    $middlewareInstance = new $middleware();
+                    $middlewareInstance->handle();
+                }
 
                 // Extraemos las definiciones de la ruta 
                 $handler = $routeObject->handler;
@@ -83,7 +100,20 @@ class Router
             print("404 Not Found");
         }
     }
-    
+
+    public static function middleware(string $middlewareClass): Route
+    {
+        // Obtenemos la última ruta añadida
+        $lastMethod = array_key_last(self::$routes);
+        $lastUri = array_key_last((array) self::$routes[$lastMethod]);
+        $route = self::$routes[$lastMethod][$lastUri];
+
+        // Añadimos el middleware a la ruta
+        $route->middleware($middlewareClass);
+
+        return $route;
+    }
+
     /**
      * Renderiza un layout con el contenido proporcionado.
      * 
@@ -94,10 +124,9 @@ class Router
      */
     public static function renderLayout(string $layout, string $content): void
     {
-        $layoutFile = $_SERVER['DOCUMENT_ROOT'] . '/app/layouts/' . $layout . '.php';
+        $layoutFile = $_SERVER['DOCUMENT_ROOT'] . '/resources/layouts/' . $layout . '.layout.php';
 
         if (file_exists($layoutFile)) {
-            $title = 'Title';
             $slot = $content;
             require_once($layoutFile);
         } else {
@@ -141,7 +170,7 @@ class Router
      * @return Route La instancia de la ruta añadida.
      */
     public static function post(string $uri, callable|array $handler): Route
-    { 
+    {
         return self::addRoute('POST', $uri, $handler);
     }
 
