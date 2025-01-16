@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=
@@ -8,7 +9,11 @@
     <link rel="stylesheet" href="styles/global.css">
     <link rel="stylesheet" href="styles/auth.css">
 </head>
+
 <body>
     <?= $slot ?>
 </body>
+
+<script src="/js/passwordToggle.js"></script>
+
 </html>

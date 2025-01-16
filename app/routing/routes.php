@@ -6,15 +6,15 @@ use Core\Auth\AuthMiddleware;
 use Core\Routing\Router;
 
 // Rutas públicas
+Router::get('/register', [AuthController::class, 'showRegisterForm'])
+    ->layout('auth');
+Router::post('/register', [AuthController::class, 'register']);
+
 Router::get('/login', [AuthController::class, 'showLoginForm'])
     ->layout('auth');
 Router::post('/login', [AuthController::class, 'login']);
 Router::get('/logout', [AuthController::class, 'logout']);
 
-Router::get('/register', [AuthController::class, 'showRegisterForm'])
-->layout('auth');
-Router::post('/register', [AuthController::class, 'register']);
-    
 // Rutas protegidas
 Router::get('/', function () {
     return 'Hello ' . $_SESSION['user_name'];

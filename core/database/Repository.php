@@ -16,10 +16,10 @@ namespace Core\Database;
 abstract class Repository
 {
     /** @var string Nombre de la tabla en la base de datos */
-    protected string $table;
+    protected static string $table;
 
     /** @var string Nombre de la clave primaria de la tabla */
-    protected string $primaryKey = 'id';
+    protected static string $primaryKey = 'id';
 
     /**
      * Encuentra un registro por su ID.
@@ -35,9 +35,9 @@ abstract class Repository
      * }
      * ```
      */
-    public function find(int $id): ?array
+    public static function find(int $id): ?array
     {
-        $query = "SELECT * FROM " . $this->table . " WHERE " . $this->primaryKey . " = :id LIMIT 1";
+        $query = "SELECT * FROM " . self::$table . " WHERE " . self::$primaryKey . " = :id LIMIT 1";
         $result = DataBase::select($query, ['id' => $id]);
         return $result ? $result[0] : null;
     }
@@ -59,9 +59,9 @@ abstract class Repository
      * );
      * ```
      */
-    public function findBy(array $criteria, array $orderBy = [], ?int $limit = null): array
+    public static function findBy(array $criteria, array $orderBy = [], ?int $limit = null): array
     {
-        $query = "SELECT * FROM " . $this->table;
+        $query = "SELECT * FROM " . self::$table;
 
         if (!empty($criteria)) {
             $conditions = array_map(fn($field) => "$field = :$field", array_keys($criteria));
@@ -99,14 +99,14 @@ abstract class Repository
      * ]);
      * ```
      */
-    public function create(array $data): int
+    public static function create(array $data): int
     {
         $fields = array_keys($data);
         $placeholders = array_map(fn($field) => ":$field", $fields);
 
         $query = sprintf(
             "INSERT INTO %s (%s) VALUES (%s)",
-            $this->table,
+            self::$table,
             implode(', ', $fields),
             implode(', ', $placeholders)
         );
@@ -129,15 +129,15 @@ abstract class Repository
      * ]);
      * ```
      */
-    public function update(int $id, array $data): int
+    public static function update(int $id, array $data): int
     {
         $fields = array_map(fn($field) => "$field = :$field", array_keys($data));
 
         $query = sprintf(
             "UPDATE %s SET %s WHERE %s = :id",
-            $this->table,
+            self::$table,
             implode(', ', $fields),
-            $this->primaryKey
+            self::$primaryKey
         );
 
         $data['id'] = $id;
@@ -156,9 +156,9 @@ abstract class Repository
      * $deleted = $repository->delete(1);
      * ```
      */
-    public function delete(int $id): int
+    public static function delete(int $id): int
     {
-        $query = "DELETE FROM " . $this->table . " WHERE " . $this->primaryKey . " = :id";
+        $query = "DELETE FROM " . self::$table . " WHERE " . self::$primaryKey . " = :id";
         return Database::delete($query, ['id' => $id]);
     }
 
@@ -174,9 +174,9 @@ abstract class Repository
      * $activeCount = $repository->count(['status' => 'active']);
      * ```
      */
-    public function count(array $criteria = []): int
+    public static function count(array $criteria = []): int
     {
-        $query = "SELECT COUNT(*) as count FROM " . $this->table;
+        $query = "SELECT COUNT(*) as count FROM " . self::$table;
 
         if (!empty($criteria)) {
             $conditions = array_map(fn($field) => "$field = :$field", array_keys($criteria));

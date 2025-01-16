@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Repositories;
+namespace App\Features\User;
 
 use Core\Database\Repository;
 use Core\Database\Database;
@@ -18,7 +18,7 @@ use Core\Exceptions\DatabaseException;
 class UserRepository extends Repository
 {
     /** @var string Nombre de la tabla de usuarios */
-    protected string $table = 'users';
+    protected static string $table = 'users';
 
     /**
      * Encuentra un usuario por su nombre de usuario.
@@ -35,9 +35,9 @@ class UserRepository extends Repository
      * }
      * ```
      */
-    public function findByUsername(string $username): ?array
+    public static function findByUsername(string $username): ?array
     {
-        $result = $this->findBy(['user' => $username], [], 1);
+        $result = self::findBy(['user' => $username], [], 1);
         return $result ? $result[0] : null;
     }
 
@@ -56,9 +56,9 @@ class UserRepository extends Repository
      * }
      * ```
      */
-    public function searchByUsername(string $search): array
+    public static function searchByUsername(string $search): array
     {
-        $query = "SELECT * FROM " . $this->table . " WHERE user LIKE :search";
+        $query = "SELECT * FROM " . self::$table . " WHERE user LIKE :search";
         return Database::select($query, ['search' => "%$search%"]);
     }
 
@@ -75,7 +75,7 @@ class UserRepository extends Repository
      * echo "Número de seguidores: " . count($followers);
      * ```
      */
-    public function getFollowers(int $userId): array
+    public static function getFollowers(int $userId): array
     {
         $query = "SELECT u.* FROM users u
                  INNER JOIN follows f ON f.user_id = u.id
@@ -96,7 +96,7 @@ class UserRepository extends Repository
      * echo "Siguiendo a: " . count($following) . " usuarios";
      * ```
      */
-    public function getFollowing(int $userId): array
+    public static function getFollowing(int $userId): array
     {
         $query = "SELECT u.* FROM users u
                  INNER JOIN follows f ON f.user_followed = u.id
@@ -118,7 +118,7 @@ class UserRepository extends Repository
      * }
      * ```
      */
-    public function follow(int $userId, int $followedId): bool
+    public static function follow(int $userId, int $followedId): bool
     {
         try {
             Database::insert(
@@ -145,7 +145,7 @@ class UserRepository extends Repository
      * }
      * ```
      */
-    public function unfollow(int $userId, int $followedId): bool
+    public static function unfollow(int $userId, int $followedId): bool
     {
         try {
             Database::delete(
@@ -173,7 +173,7 @@ class UserRepository extends Repository
      * }
      * ```
      */
-    public function isFollowing(int $userId, int $followedId): bool
+    public static function isFollowing(int $userId, int $followedId): bool
     {
         $query = "SELECT COUNT(*) as count FROM follows 
                  WHERE user_id = :userId AND user_followed = :followedId";
@@ -197,7 +197,7 @@ class UserRepository extends Repository
      * echo "Tienes $followersCount seguidores";
      * ```
      */
-    public function getFollowersCount(int $userId): int
+    public static function getFollowersCount(int $userId): int
     {
         $query = "SELECT COUNT(*) as count FROM follows WHERE user_followed = :userId";
         $result = Database::select($query, ['userId' => $userId]);
@@ -217,7 +217,7 @@ class UserRepository extends Repository
      * echo "Sigues a $followingCount usuarios";
      * ```
      */
-    public function getFollowingCount(int $userId): int
+    public static function getFollowingCount(int $userId): int
     {
         $query = "SELECT COUNT(*) as count FROM follows WHERE user_id = :userId";
         $result = Database::select($query, ['userId' => $userId]);

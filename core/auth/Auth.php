@@ -2,6 +2,8 @@
 
 namespace Core\Auth;
 
+use Core\Session;
+
 /**
  * Sistema de autenticación base del framework
  * 
@@ -15,10 +17,11 @@ class Auth
      */
     public static function login(array $user): void 
     {
-        $_SESSION['user_id'] = $user['id'];
-        $_SESSION['user_name'] = $user['user'];
+        Session::set('user_id', $user['id']);
+        Session::set('user_name', $user['user']);
+
         if (session_status() == PHP_SESSION_ACTIVE) {
-            session_regenerate_id(true);
+            Session::regenerate();
         }
     }
 
@@ -27,7 +30,7 @@ class Auth
      */
     public static function logout(): void 
     {
-        session_destroy();
+        Session::destroy();
     }
 
     /**
@@ -35,7 +38,7 @@ class Auth
      */
     public static function check(): bool 
     {
-        return isset($_SESSION['user_id']);
+        return Session::has('user_id');
     }
 
     /**
@@ -43,21 +46,14 @@ class Auth
      */
     public static function id(): ?int 
     {
-        return $_SESSION['user_id'] ?? null;
+        return Session::get('user_id', null);
     }
-
+    
     /**
      * Obtiene el nombre del usuario autenticado
      */
     public static function user(): ?string 
     {
-        return $_SESSION['user_name'] ?? null;
-    }
-
-    public static function getError(): ?string 
-    {
-        $error = $_SESSION['error'] ?? null;
-        unset($_SESSION['error']);
-        return $error;
+        return Session::get('user_name', null);
     }
 }

@@ -33,7 +33,7 @@ main {
     background-color: var(--bg-error);
     color: var(--color-error);
     border: 1px solid var(--color-error);
-    border-radius: .5rem;
+    border-radius: 0.5rem;
 
     font-size: smaller;
     font-weight: 600;
@@ -96,8 +96,13 @@ h1 {
 
         font-size: x-small;
         text-decoration: none;
+        background: none;
         color: white;
         cursor: pointer;
+
+        &:hover {
+            background: none;
+        }
     }
 }
 
@@ -119,7 +124,7 @@ h1 {
             background-color: var(--bg-color-aph60);
             border-color: var(--color-active);
         }
-        
+
         &:checked::before {
             content: '✔';
             display: block;
@@ -128,11 +133,10 @@ h1 {
             font-size: 0.7rem;
         }
     }
-    
+
     & label {
         font-size: smaller;
     }
-
 }
 
 button {
@@ -165,14 +169,14 @@ form {
     display: flex;
     flex-direction: row;
     justify-content: center;
-    gap: .5rem;
+    gap: 0.5rem;
 
     font-size: small;
 
     & span {
-        opacity: .6;
+        opacity: 0.6;
     }
-    
+
     & a {
         text-decoration: none;
         color: var(--color-base);

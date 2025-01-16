@@ -1,6 +1,5 @@
 <?php
 
-use Core\App;
 use Core\Autoload;
 use Core\Routing\Router;
 

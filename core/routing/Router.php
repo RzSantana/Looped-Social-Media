@@ -2,6 +2,7 @@
 
 namespace Core\Routing;
 
+use Core\Session;
 use Exception;
 use InvalidArgumentException;
 
@@ -37,14 +38,7 @@ class Router
      */
     public static function processRequest(): void
     {
-        if (session_status() == PHP_SESSION_NONE) {
-            // Configuraciones de seguridad adicionales
-            ini_set('session.use_strict_mode', 1);
-            ini_set('session.cookie_httponly', 1);
-            ini_set('session.use_only_cookies', 1);
-
-            session_start();
-        }
+        Session::start();
         
         $method = $_SERVER['REQUEST_METHOD'];
         $uri = trim(strtok($_SERVER['REQUEST_URI'], '?'), '/');
