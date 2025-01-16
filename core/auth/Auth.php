@@ -53,4 +53,11 @@ class Auth
     {
         return $_SESSION['user_name'] ?? null;
     }
+
+    public static function getError(): ?string 
+    {
+        $error = $_SESSION['error'] ?? null;
+        unset($_SESSION['error']);
+        return $error;
+    }
 }

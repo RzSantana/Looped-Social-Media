@@ -11,10 +11,10 @@ Router::get('/login', [AuthController::class, 'showLoginForm'])
 Router::post('/login', [AuthController::class, 'login']);
 Router::get('/logout', [AuthController::class, 'logout']);
 
-Router::get('/register', function () {
-    return 'Register';
-})->layout('auth');
-
+Router::get('/register', [AuthController::class, 'showRegisterForm'])
+->layout('auth');
+Router::post('/register', [AuthController::class, 'register']);
+    
 // Rutas protegidas
 Router::get('/', function () {
     return 'Hello ' . $_SESSION['user_name'];

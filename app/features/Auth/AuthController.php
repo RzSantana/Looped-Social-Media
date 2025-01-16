@@ -37,7 +37,23 @@ class AuthController extends Controller
         }
 
         return self::view('login', [
-            'error' => $_SESSION['error'] ?? null
+            'error' => Auth::getError() ?? null,
+            'data' => [
+                'username' => $_POST['username'],
+                'password' => $_POST['password']
+            ]
+        ]);
+    }
+    
+    public static function showRegisterForm(): string
+    {
+        if (Auth::check()) {
+            header('Location: /');
+            exit;
+        }
+
+        return self::view('register', [
+            'error' => Auth::getError() ?? null
         ]);
     }
 

@@ -1,8 +1,26 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Onest:wght@100..900&display=swap');
+
+:root {
+    --color-base: #8b5cf6;
+    --color-hover: #7c3aed;
+    --color-active: #6d28d9;
+    --color-disable: #ede9fe;
+    --color-error: #f87171;
+
+    --color-text: #2e1065;
+    --color-text-disable: #a78bfa;
+
+    --bg-color: #7c3aed;
+    --bg-color-aph40: rgba(124, 58, 237, 0.4);
+    --bg-color-aph60: rgba(124, 58, 237, 0.6);
+    --bg-error: #fecaca;
+}
+
 * {
-    font-family: Verdana, sans-serif;
+    font-family: 'Onest Variable', 'Inter', Verdana, sans-serif;
     padding: 0;
     margin: 0;
 
-    box-sizing: border-box; 
+    box-sizing: border-box;
     color-scheme: dark;
 }
