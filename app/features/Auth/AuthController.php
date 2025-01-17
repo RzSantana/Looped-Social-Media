@@ -7,6 +7,7 @@ use Core\Auth\Auth;
 use Core\Controller;
 use Core\Database\Database;
 use Core\Session;
+use Exception;
 
 class AuthController extends Controller
 {
@@ -15,14 +16,9 @@ class AuthController extends Controller
         $username = $_POST['username'] ?? '';
         $password = $_POST['password'] ?? '';
 
-        // Buscar usuario
-        $user = Database::select(
-            "SELECT * FROM users WHERE user = :username LIMIT 1",
-            ['username' => $username]
-        );
-
-        if (!$user || !password_verify($password, $user[0]['password'])) {
-            Session::flash('error', 'Usuario o contraseña incorrectos');
+        // Validacion basica
+        if (empty($username) || empty($password)) {
+            Session::flash('error', 'Por favor, complete todos los campos');
             Session::flash('username', $username);
             Session::flash('password', $password);
 
@@ -30,76 +26,87 @@ class AuthController extends Controller
             exit;
         }
 
-        Auth::login($user[0]);
-        header('Location: /');
+        try {
+            $user = UserRepository::findByUsername($username);
+
+            if (!$user || !password_verify($password, $user['password'])) {
+                Session::flash('error', 'Usuario o contraseña incorrectos');
+                Session::flash('username', $username);
+                Session::flash('password', $password);
+
+                header('Location: /login');
+                exit;
+            }
+
+            Auth::login($user);
+            header('Location: /');
+        } catch (Exception $e) {
+            Session::flash('error', 'Ha ocurrido un error inesperado');
+            header('Location: /login');
+            exit;
+        }
     }
 
     public static function register(): void
     {
-        $username = $_POST['username'] ?? '';
-        $mail = $_POST['mail'] ?? '';
+        $username = trim($_POST['username'] ?? '');
+        $email = trim($_POST['email'] ?? '');
         $password = $_POST['password'] ?? '';
         $passwordConfirm = $_POST['passwordConfirm'] ?? '';
 
         // Validadion del nombre de usuario
         if (empty($username)) {
-            Session::flash('error', 'El nombre de usuario es requerido');
+            $errors['username'] = 'El nombre de usuario es requerido';
         } elseif (strlen($username) < 3 || strlen($username) > 20) {
-            Session::flash('error', 'El nombre de usuario debe tener entre 3 y 20 caracteres');
+            $errors['username'] = 'El nombre de usuario debe tener entre 3 y 20 caracteres';
         } elseif (!preg_match('/^[a-zA-Z0-9_]+$/', $username)) {
-            Session::flash('error', 'El nombre de usuario solo puede contener letras, números y guiones bajos');
+            $errors['username'] = 'El nombre de usuario solo puede contener letras, números y guiones bajos';
         }
 
         // Verificar si el nombre de usuario existe
-        if (UserRepository::findByUsername($username)) {
-            $errors[] = 'Este nombre de usuario ya está en uso';
-        }
-        $existingUser = Database::select(
-            "SELECT id FROM users WHERE user = :username LIMIT 1",
-            ['username' => $username]
-        );
-        if (!empty($existingUser)) {
-            Session::flash('error', 'Este nombre de usuario ya está en uso');
+        if (!Session::hasFlash('errors') && UserRepository::findByUsername($username)) {
+            $errors['username'] = 'Este nombre de usuario ya está en uso';
         }
 
+
         // Validadion del mail
-        if (empty($mail)) {
-            Session::flash('error', 'El correo electrónico es requerido');
-        } elseif (!filter_var($mail, FILTER_VALIDATE_EMAIL)) {
-            Session::flash('error', 'El formato del correo electrónico no es válido');
+        if (empty($email)) {
+            $errors['email'] = 'El correo electrónico es requerido';
+        } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $errors['email'] = 'El formato del correo electrónico no es válido';
         }
 
         // Verificar si el correo electronico existe
-        $existingEmail = Database::select(
-            "SELECT id FROM users WHERE mail = :mail LIMIT 1",
-            ['mail' => $mail]
-        );
-        if (!empty($existingEmail)) {
-            Session::flash('error', 'Este correo electrónico ya está registrado');
+        if (!Session::hasFlash('errors') && UserRepository::findByEmail($email)) {
+            $errors['email'] = 'Este correo electrónico ya está registrado';
         }
 
         // Validacion de la contraseña
         if (empty($password)) {
-            Session::flash('error', 'La contraseña es requerida');
+            $errors['password'] = 'La contraseña es requerida';
         } elseif (strlen($password) < 8) {
-            Session::flash('error', 'La contraseña debe tener al menos 8 caracteres');
+            $errors['password'] = 'La contraseña debe tener al menos 8 caracteres';
         } elseif (!preg_match('/[A-Z]/', $password)) {
-            Session::flash('error', 'La contraseña debe contener al menos una mayúscula');
+            $errors['password'] = 'La contraseña debe contener al menos una mayúscula';
         } elseif (!preg_match('/[a-z]/', $password)) {
-            Session::flash('error', 'La contraseña debe contener al menos una minúscula');
+            $errors['password'] = 'La contraseña debe contener al menos una minúscula';
         } elseif (!preg_match('/[0-9]/', $password)) {
-            Session::flash('error', 'La contraseña debe contener al menos un número');
+            $errors['password'] = 'La contraseña debe contener al menos un número';
         }
 
         // Valicación de confimacion de contraseña
-        if ($password !== $passwordConfirm) {
-            Session::flash('error', 'Las contraseñas no coinciden');
+        if (empty($passwordConfirm)) {
+            $errors['passwordConfirm'] = 'La contraseña es requerida';
+        } elseif ($password !== $passwordConfirm) {
+            $errors['passwordConfirm'] = 'Las contraseñas no coinciden';
         }
 
+
         // Si se produce algún error, vuelva al formulario de registro
-        if (!Session::hasFlash('error')) {
+        if (isset($errors)) {
+            Session::flash('errors', $errors);
             Session::flash('username', $username);
-            Session::flash('mail', $mail);
+            Session::flash('email', $email);
             Session::flash('password', $password);
             Session::flash('passwordConfirm', $passwordConfirm);
 
@@ -134,9 +141,9 @@ class AuthController extends Controller
         }
 
         return self::view('register', [
-            'error' => Session::getFlash('error', null),
+            'errors' => Session::getFlash('errors', null),
             'username' => Session::getFlash('username', ''),
-            'mail' => Session::getFlash('mail', ''),
+            'email' => Session::getFlash('email', ''),
             'password' => Session::getFlash('password', ''),
             'passwordConfirm' => Session::getFlash('passwordConfirm', ''),
 

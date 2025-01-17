@@ -78,9 +78,9 @@ class DataBase
             } catch (PDOException $exception) {
                 throw new DatabaseException("Error de conexión: " . $exception->getMessage());
             }
-
-            return self::$connection;
+            
         }
+        return self::$connection;
     }
 
     /**

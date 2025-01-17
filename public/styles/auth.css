@@ -61,6 +61,12 @@ h1 {
     gap: 1rem;
 }
 
+.input-content {
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+}
+
 .input {
     position: relative;
 

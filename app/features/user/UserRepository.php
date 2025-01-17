@@ -42,6 +42,27 @@ class UserRepository extends Repository
     }
 
     /**
+     * Encuentra un usuario por su email.
+     *
+     * @param string $username Email del usuario a buscar
+     * @return array<string, mixed>|null Datos del usuario o null si no se encuentra
+     * @throws DatabaseException Si ocurre un error en la consulta
+     *
+     * @example Uso
+     * ```php
+     * $user = $userRepo->findByEmail('john_doe@mail.com');
+     * if ($user) {
+     *     echo "Usuario encontrado: " . $user['user'];
+     * }
+     * ```
+     */
+    public static function findByEmail(string $email): ?array
+    {
+        $result = self::findBy(['email' => $email], [], 1);
+        return $result ? $result[0] : null;
+    }
+
+    /**
      * Busca usuarios por coincidencia parcial en el nombre de usuario.
      *
      * @param string $search Término de búsqueda

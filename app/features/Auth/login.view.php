@@ -15,7 +15,7 @@
                 <div class="inputs-container">
                     <?php if (isset($error)): ?>
                         <div class="error-message">
-                            <?= htmlspecialchars($error) ?>
+                            <?= $error ?>
                         </div>
                     <?php endif; ?>
 

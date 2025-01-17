@@ -37,7 +37,7 @@ abstract class Repository
      */
     public static function find(int $id): ?array
     {
-        $query = "SELECT * FROM " . self::$table . " WHERE " . self::$primaryKey . " = :id LIMIT 1";
+        $query = "SELECT * FROM " . static::$table . " WHERE " . static::$primaryKey . " = :id LIMIT 1";
         $result = DataBase::select($query, ['id' => $id]);
         return $result ? $result[0] : null;
     }
@@ -61,7 +61,7 @@ abstract class Repository
      */
     public static function findBy(array $criteria, array $orderBy = [], ?int $limit = null): array
     {
-        $query = "SELECT * FROM " . self::$table;
+        $query = "SELECT * FROM " . static::$table;
 
         if (!empty($criteria)) {
             $conditions = array_map(fn($field) => "$field = :$field", array_keys($criteria));
@@ -80,7 +80,6 @@ abstract class Repository
         if ($limit !== null) {
             $query .= " LIMIT $limit";
         }
-
         return Database::select($query, $criteria);
     }
 
@@ -106,7 +105,7 @@ abstract class Repository
 
         $query = sprintf(
             "INSERT INTO %s (%s) VALUES (%s)",
-            self::$table,
+            static::$table,
             implode(', ', $fields),
             implode(', ', $placeholders)
         );
@@ -135,9 +134,9 @@ abstract class Repository
 
         $query = sprintf(
             "UPDATE %s SET %s WHERE %s = :id",
-            self::$table,
+            static::$table,
             implode(', ', $fields),
-            self::$primaryKey
+            static::$primaryKey
         );
 
         $data['id'] = $id;
@@ -158,7 +157,7 @@ abstract class Repository
      */
     public static function delete(int $id): int
     {
-        $query = "DELETE FROM " . self::$table . " WHERE " . self::$primaryKey . " = :id";
+        $query = "DELETE FROM " . static::$table . " WHERE " . static::$primaryKey . " = :id";
         return Database::delete($query, ['id' => $id]);
     }
 
@@ -176,7 +175,7 @@ abstract class Repository
      */
     public static function count(array $criteria = []): int
     {
-        $query = "SELECT COUNT(*) as count FROM " . self::$table;
+        $query = "SELECT COUNT(*) as count FROM " . static::$table;
 
         if (!empty($criteria)) {
             $conditions = array_map(fn($field) => "$field = :$field", array_keys($criteria));
