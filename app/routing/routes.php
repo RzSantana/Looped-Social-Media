@@ -3,7 +3,6 @@
 use App\Features\Auth\AuthController;
 use App\Features\Feed\FeedController;
 use Core\Auth\AuthMiddleware;
-use Core\Controller;
 use Core\Routing\Router;
 
 // Rutas públicas

@@ -19,23 +19,32 @@ class Session
     public static function start(): void
     {
         if (session_status() === PHP_SESSION_NONE) {
-            // Configuración de seguridad de la sesión
-            ini_set('session.use_strict_mode', 1);
-            ini_set('session.use_only_cookies', 1);
-            ini_set('session.cookie_httponly', 1);
-            
-            if (App::env('APP_ENV') === 'production') {
-                ini_set('session.cookie_secure', 1);
-            }
+            // Configuramos los parámetros de la cookie de sesión
+            session_set_cookie_params([
+                'lifetime' => 0,
+                'path' => '/',
+                'domain' => '',
+                'secure' => App::env('APP_ENV') === 'production',
+                'httponly' => true,
+                'samesite' => 'Lax'
+            ]);
 
             session_start();
-            
+
             // Regeneramos el ID de sesión periódicamente por seguridad
             if (!isset($_SESSION['_last_regeneration'])) {
                 self::regenerate();
             } elseif (time() - $_SESSION['_last_regeneration'] > 3600) {
                 self::regenerate();
             }
+
+            // Verificación de expiración por inactividad
+            if (isset($_SESSION['_last_activity']) && (time() - $_SESSION['_last_activity'] > 3600)) {
+                self::destroy();
+                session_start();
+            }
+
+            $_SESSION['_last_activity'] = time();
         }
     }
 
@@ -147,7 +156,7 @@ class Session
     {
         session_destroy();
         $_SESSION = [];
-        
+
         if (isset($_COOKIE[session_name()])) {
             setcookie(
                 session_name(),

@@ -37,9 +37,7 @@ class Router
      * @return void
      */
     public static function processRequest(): void
-    {
-        Session::start();
-        
+    {        
         $method = $_SERVER['REQUEST_METHOD'];
         $uri = trim(strtok($_SERVER['REQUEST_URI'], '?'), '/');
 

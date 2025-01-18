@@ -15,6 +15,7 @@ class AuthController extends Controller
     {
         $username = trim($_POST['username'] ?? '');
         $password = $_POST['password'] ?? '';
+        $remember = isset($_POST['remember']);
 
         // Validacion basica
         if (empty($username)) {
@@ -50,7 +51,7 @@ class AuthController extends Controller
                 exit;
             }
 
-            Auth::login($user);
+            Auth::login($user, $remember);
             header('Location: /');
         } catch (Exception $e) {
             Session::flash('error', 'Ha ocurrido un error inesperado');
@@ -65,6 +66,7 @@ class AuthController extends Controller
         $email = trim($_POST['email'] ?? '');
         $password = $_POST['password'] ?? '';
         $passwordConfirm = $_POST['passwordConfirm'] ?? '';
+        $remember = isset($_POST['remember']);
 
         // Validación del nombre de usuario
         if (empty($username)) {
@@ -133,7 +135,7 @@ class AuthController extends Controller
                 exit;
             }
 
-            Auth::login($user);
+            Auth::login($user, $remember);
             header('Location: /');
             exit;
         } catch (DatabaseException $e) {
