@@ -5,6 +5,7 @@ namespace App\Features\User;
 use Core\Database\Repository;
 use Core\Database\Database;
 use Core\Exceptions\DatabaseException;
+use Exception;
 
 /**
  * Repositorio para la gestión de usuarios en la red social.
@@ -243,5 +244,39 @@ class UserRepository extends Repository
         $query = "SELECT COUNT(*) as count FROM follows WHERE user_id = :userId";
         $result = Database::select($query, ['userId' => $userId]);
         return (int)$result[0]['count'];
+    }
+
+    public static function register(string $username, string $email, string $password): ?array
+    {
+        try {
+            Database::beginTransaction();
+
+            // Hasheamos la contraseña de forma segura
+            $hashedPassword = password_hash($password, PASSWORD_DEFAULT, ['cost' => 11]);
+
+            $userId = Database::insert(
+                "INSERT INTO " . self::$table . " (user, email, password) VALUES (:user, :email, :password)",
+                [
+                    'user' => $username,
+                    'email' => $email,
+                    'password' => $hashedPassword
+                ]
+            );
+
+            if (!$userId) {
+                Database::rollback();
+                return null;
+            }
+
+            // Obtenemos los datos del usuario creado
+            $user = self::find($userId);
+
+            Database::commit();
+            return $user;
+        } catch (DatabaseException $e) {
+            Database::rollback();
+            throw new Exception("Error: " . $e->getMessage());
+            ;
+        }
     }
 }

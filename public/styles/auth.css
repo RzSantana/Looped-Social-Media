@@ -29,7 +29,8 @@ main {
 
 .error-message {
     width: 100%;
-    padding: 1rem 1rem;
+    min-height: fit-content;
+    padding: .5rem 1rem;
     background-color: var(--bg-error);
     color: var(--color-error);
     border: 1px solid var(--color-error);
@@ -63,13 +64,14 @@ h1 {
 
 .input-content {
     display: flex;
-    flex-direction: column;
+    flex-direction: row-reverse;
     gap: .5rem;
+    justify-content: start;
 }
 
 .input {
     position: relative;
-
+    min-width: 18rem;
     & label {
         position: absolute;
         left: 0.8rem;

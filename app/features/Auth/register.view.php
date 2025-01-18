@@ -7,6 +7,11 @@
 
 
         <form action="/register" method="POST">
+            <?php if (isset($error)): ?>
+                <div class="error-message">
+                    <?= $error ?>
+                </div>
+            <?php endif; ?>
             <div class="inputs-container">
                 <div class="input-content">
 

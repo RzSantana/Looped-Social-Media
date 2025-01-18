@@ -6,6 +6,7 @@ use App\Features\User\UserRepository;
 use Core\Auth\Auth;
 use Core\Controller;
 use Core\Database\Database;
+use Core\Exceptions\DatabaseException;
 use Core\Session;
 use Exception;
 
@@ -113,9 +114,24 @@ class AuthController extends Controller
             header('Location: /register');
             exit;
         }
+        try {
+            $user = UserRepository::register($username, $email, $password);
+
+            if (!$user) {
+                Session::flash('error', 'No se pudo completar el registro');
+                header('Location: /register');
+                exit;
+            }
 
 
-        header('Location: /');
+            Auth::login($user);
+            header('Location: /');
+            exit;
+        } catch (DatabaseException $e) {
+            Session::flash('error', 'Error al crear la cuenta');
+            header('Location: /register');
+            exit;
+        }
     }
 
     public static function showLoginForm(): string
@@ -141,6 +157,7 @@ class AuthController extends Controller
         }
 
         return self::view('register', [
+            'error' => Session::getFlash('error', null),
             'errors' => Session::getFlash('errors', null),
             'username' => Session::getFlash('username', ''),
             'email' => Session::getFlash('email', ''),
