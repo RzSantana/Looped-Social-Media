@@ -1,0 +1,38 @@
+body {
+    padding: 3rem 3rem 0 3rem;
+    background-color: rgb(38, 32, 46);
+}
+
+header {
+    display: grid;
+    grid-template: 1fr / repeat(3, 1fr);
+
+    & svg {
+        width: 1.5rem;
+        height: 1.5rem;
+        fill: white;
+    }
+}
+
+nav {
+    display: flex;
+    justify-content: center;
+
+    & ul {
+        display: flex;
+        flex-direction: row;
+        gap: 2rem;
+    }
+
+    & li {
+        list-style: none;
+    }
+
+}
+
+.actions {
+    display: flex;
+    flex-direction: row;
+    gap: 2rem;
+    justify-content: end;
+}
