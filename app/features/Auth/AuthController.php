@@ -5,7 +5,6 @@ namespace App\Features\Auth;
 use App\Features\User\UserRepository;
 use Core\Auth\Auth;
 use Core\Controller;
-use Core\Database\Database;
 use Core\Exceptions\DatabaseException;
 use Core\Session;
 use Exception;
@@ -14,12 +13,21 @@ class AuthController extends Controller
 {
     public static function login(): void
     {
-        $username = $_POST['username'] ?? '';
+        $username = trim($_POST['username'] ?? '');
         $password = $_POST['password'] ?? '';
 
         // Validacion basica
-        if (empty($username) || empty($password)) {
-            Session::flash('error', 'Por favor, complete todos los campos');
+        if (empty($username)) {
+            $errors['username'] = 'Nombre de usuario requerido';
+        }
+
+        if (empty($password)) {
+            $errors['password'] = 'Contraseña requerido';
+        }
+
+        // Si se produce algún error, vuelva al formulario de login
+        if (isset($errors)) {
+            Session::flash('errors', $errors);
             Session::flash('username', $username);
             Session::flash('password', $password);
 
@@ -31,7 +39,10 @@ class AuthController extends Controller
             $user = UserRepository::findByUsername($username);
 
             if (!$user || !password_verify($password, $user['password'])) {
-                Session::flash('error', 'Usuario o contraseña incorrectos');
+                Session::flash('errors', [
+                    'username' => 'Usuario incorrecto',
+                    'password' => 'Contraseña incorrecta'
+                ]);
                 Session::flash('username', $username);
                 Session::flash('password', $password);
 
@@ -55,53 +66,51 @@ class AuthController extends Controller
         $password = $_POST['password'] ?? '';
         $passwordConfirm = $_POST['passwordConfirm'] ?? '';
 
-        // Validadion del nombre de usuario
+        // Validación del nombre de usuario
         if (empty($username)) {
-            $errors['username'] = 'El nombre de usuario es requerido';
+            $errors['username'] = 'Nombre de usuario es requerido';
         } elseif (strlen($username) < 3 || strlen($username) > 20) {
-            $errors['username'] = 'El nombre de usuario debe tener entre 3 y 20 caracteres';
+            $errors['username'] = 'Nombre de usuario debe tener entre 3 y 20 caracteres';
         } elseif (!preg_match('/^[a-zA-Z0-9_]+$/', $username)) {
-            $errors['username'] = 'El nombre de usuario solo puede contener letras, números y guiones bajos';
+            $errors['username'] = 'Nombre de usuario solo puede contener letras, números y guiones bajos';
         }
 
         // Verificar si el nombre de usuario existe
-        if (!Session::hasFlash('errors') && UserRepository::findByUsername($username)) {
-            $errors['username'] = 'Este nombre de usuario ya está en uso';
+        if (!isset($errors['username']) && UserRepository::findByUsername($username)) {
+            $errors['username'] = 'Nombre de usuario ya en uso';
         }
 
-
-        // Validadion del mail
+        // Validación del correo electrónico
         if (empty($email)) {
-            $errors['email'] = 'El correo electrónico es requerido';
+            $errors['email'] = 'Correo electrónico es requerido';
         } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            $errors['email'] = 'El formato del correo electrónico no es válido';
+            $errors['email'] = 'Formato del correo electrónico no es válido';
         }
 
-        // Verificar si el correo electronico existe
-        if (!Session::hasFlash('errors') && UserRepository::findByEmail($email)) {
-            $errors['email'] = 'Este correo electrónico ya está registrado';
+        // Verificar si el correo electrónico existe
+        if (!isset($errors['email']) && UserRepository::findByEmail($email)) {
+            $errors['email'] = 'Correo electrónico ya está registrado';
         }
 
-        // Validacion de la contraseña
+        // Validación de la contraseña
         if (empty($password)) {
-            $errors['password'] = 'La contraseña es requerida';
+            $errors['password'] = 'Contraseña es requerida';
         } elseif (strlen($password) < 8) {
-            $errors['password'] = 'La contraseña debe tener al menos 8 caracteres';
+            $errors['password'] = 'Contraseña debe tener al menos 8 caracteres';
         } elseif (!preg_match('/[A-Z]/', $password)) {
-            $errors['password'] = 'La contraseña debe contener al menos una mayúscula';
+            $errors['password'] = 'Contraseña debe contener al menos una mayúscula';
         } elseif (!preg_match('/[a-z]/', $password)) {
-            $errors['password'] = 'La contraseña debe contener al menos una minúscula';
+            $errors['password'] = 'Contraseña debe contener al menos una minúscula';
         } elseif (!preg_match('/[0-9]/', $password)) {
-            $errors['password'] = 'La contraseña debe contener al menos un número';
+            $errors['password'] = 'Contraseña debe contener al menos un número';
         }
 
-        // Valicación de confimacion de contraseña
+        // Validación de confirmación de contraseña
         if (empty($passwordConfirm)) {
-            $errors['passwordConfirm'] = 'La contraseña es requerida';
+            $errors['passwordConfirm'] = 'Confirmación de la contraseña es requerida';
         } elseif ($password !== $passwordConfirm) {
-            $errors['passwordConfirm'] = 'Las contraseñas no coinciden';
+            $errors['passwordConfirm'] = 'Confirmación de contraseña no coincide';
         }
-
 
         // Si se produce algún error, vuelva al formulario de registro
         if (isset($errors)) {
@@ -114,6 +123,7 @@ class AuthController extends Controller
             header('Location: /register');
             exit;
         }
+
         try {
             $user = UserRepository::register($username, $email, $password);
 
@@ -122,7 +132,6 @@ class AuthController extends Controller
                 header('Location: /register');
                 exit;
             }
-
 
             Auth::login($user);
             header('Location: /');
@@ -143,9 +152,9 @@ class AuthController extends Controller
 
         return self::view('login', [
             'error' => Session::getFlash('error', null),
+            'errors' => Session::getFlash('errors', null),
             'username' => Session::getFlash('username', ''),
             'password' => Session::getFlash('password', ''),
-            'visibility' => Session::get('visibility', false),
         ]);
     }
 
@@ -158,12 +167,11 @@ class AuthController extends Controller
 
         return self::view('register', [
             'error' => Session::getFlash('error', null),
-            'errors' => Session::getFlash('errors', null),
+            'errors' => Session::getFlash('errors', []),
             'username' => Session::getFlash('username', ''),
             'email' => Session::getFlash('email', ''),
             'password' => Session::getFlash('password', ''),
             'passwordConfirm' => Session::getFlash('passwordConfirm', ''),
-
         ]);
     }
 

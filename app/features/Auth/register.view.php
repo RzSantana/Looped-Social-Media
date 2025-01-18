@@ -14,13 +14,6 @@
             <?php endif; ?>
             <div class="inputs-container">
                 <div class="input-content">
-
-                    <?php if (isset($errors['username'])): ?>
-                        <div class="error-message">
-                            <?= $errors['username'] ?>
-                        </div>
-                    <?php endif; ?>
-
                     <div class="input">
                         <label for="username">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
@@ -28,19 +21,29 @@
                             </svg>
                         </label>
                         <input type="text"
+                            class="<?= isset($errors['username']) ? 'input-error' : '' ?>"
                             id="username"
                             name="username"
-                            value="<?= $username ?>"
+                            value="<?= htmlspecialchars($username) ?>"
                             placeholder="Nombre de usuario">
+                        <?php if (isset($errors['username'])): ?>
+                            <div class="info-input">
+                                <div class="icon-error">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512">
+                                        <path d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z" />
+                                    </svg>
+                                </div>
+                            </div>
+                        <?php endif; ?>
                     </div>
+                    <?php if (isset($errors['username'])): ?>
+                        <div class="error-message">
+                            <?= $errors['username'] ?>
+                        </div>
+                    <?php endif; ?>
                 </div>
 
                 <div class="input-content">
-                    <?php if (isset($errors['email'])): ?>
-                        <div class="error-message">
-                            <?= $errors['email'] ?>
-                        </div>
-                    <?php endif; ?>
                     <div class="input">
 
                         <label for="email">
@@ -49,20 +52,30 @@
                             </svg>
                         </label>
                         <input type="text"
+                            class="<?= isset($errors['email']) ? 'input-error' : '' ?>"
                             id="email"
                             name="email"
-                            value="<?= $email ?>"
+                            value="<?= htmlspecialchars($email) ?>"
                             placeholder="Correo electronico">
+                        <?php if (isset($errors['email'])): ?>
+                            <div class="info-input">
+                                <div class="icon-error">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512">
+                                        <path d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z" />
+                                    </svg>
+                                </div>
+                            </div>
+                        <?php endif; ?>
                     </div>
+                    <?php if (isset($errors['email'])): ?>
+                        <div class="error-message">
+                            <?= $errors['email'] ?>
+                        </div>
+                    <?php endif; ?>
                 </div>
 
                 <div class="input-content">
 
-                    <?php if (isset($errors['password'])): ?>
-                        <div class="error-message">
-                            <?= $errors['password'] ?>
-                        </div>
-                    <?php endif; ?>
 
                     <div class="input">
                         <label for="password">
@@ -71,21 +84,30 @@
                             </svg>
                         </label>
                         <input type="password"
+                            class="<?= isset($errors['password']) ? 'input-error' : '' ?>"
                             id="password"
                             name="password"
                             placeholder="Contraseña"
-                            value="<?= $password ?>">
-                        <a>Mostrar</a>
+                            value="<?= htmlspecialchars($password) ?>">
+                        <div class="info-input">
+                            <a class="visibility">Mostrar</a>
+                            <?php if (isset($errors['password'])): ?>
+                                <div class="icon-error">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512">
+                                        <path d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z" />
+                                    </svg>
+                                </div>
+                            <?php endif; ?>
+                        </div>
+                        <?php if (isset($errors['password'])): ?>
+                            <div class="error-message">
+                                <?= $errors['password'] ?>
+                            </div>
+                        <?php endif; ?>
                     </div>
                 </div>
 
                 <div class="input-content">
-
-                    <?php if (isset($errors['passwordConfirm'])): ?>
-                        <div class="error-message">
-                            <?= $errors['passwordConfirm'] ?>
-                        </div>
-                    <?php endif; ?>
 
                     <div class="input">
                         <label for="passwordConfirm">
@@ -94,13 +116,30 @@
                             </svg>
                         </label>
                         <input type="password"
+                            class="<?= isset($errors['passwordConfirm']) ? 'input-error' : '' ?>"
                             id="passwordConfirm"
                             name="passwordConfirm"
                             placeholder="Confirmación"
-                            value="<?= $passwordConfirm ?>">
-                        <a>Mostrar</a>
+                            value="<?= htmlspecialchars($passwordConfirm) ?>">
+
+                        <div class="info-input">
+                            <a class="visibility">Mostrar</a>
+                            <?php if (isset($errors['passwordConfirm'])): ?>
+                                <div class="icon-error">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512">
+                                        <path d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z" />
+                                    </svg>
+                                </div>
+                            <?php endif; ?>
+                        </div>
                     </div>
+                    <?php if (isset($errors['passwordConfirm'])): ?>
+                        <div class="error-message">
+                            <?= $errors['passwordConfirm'] ?>
+                        </div>
+                    <?php endif; ?>
                 </div>
+
 
                 <div class="remember-container">
                     <input type="checkbox" name="remember" id="">
