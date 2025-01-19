@@ -14,7 +14,7 @@ class FeedController extends Controller
         $userId = Auth::id();
 
         // Obtener los post para el feed
-        $posts = PostRepository::getFeedEntries($userId);
+        $posts = PostRepository::getFeedPost($userId);
 
         $following = UserRepository::getFollowing($userId);
 
@@ -45,8 +45,6 @@ class FeedController extends Controller
                 PostRepository::addLike($postId, $userId);
             }
         } catch (\Exception $e) {
-            // Si hay un error, podríamos guardar el error en los logs
-            error_log($e->getMessage());
         }
 
         // Redirigimos de vuelta a la página anterior
@@ -74,7 +72,6 @@ class FeedController extends Controller
                 PostRepository::addDislike($postId, $userId);
             }
         } catch (\Exception $e) {
-            error_log($e->getMessage());
         }
 
         // Redirigimos de vuelta a la página anterior

@@ -2,6 +2,7 @@
 
 namespace App\Features\Post;
 
+use Core\Auth\Auth;
 use Core\Database\Repository;
 use Core\Database\Database;
 use Core\Exceptions\DatabaseException;
@@ -11,7 +12,7 @@ class PostRepository extends Repository
     protected static string $table = 'entries';
 
     /**
-     * Obtiene las entradas del feed para un usuario específico.
+     * Obtiene los post del feed para un usuario específico.
      * Incluye las entradas de los usuarios que sigue y sus propias entradas.
      * 
      * @param int $userId ID del usuario
@@ -19,12 +20,12 @@ class PostRepository extends Repository
      * @param int $offset Desplazamiento para paginación
      * @return array Lista de entradas con información de usuario y métricas
      */
-    public static function getFeedEntries(int $userId, int $limit = 10, int $offset = 0): array
+    public static function getFeedPost(int $userId, int $limit = 10, int $offset = 0): array
     {
         $query = "
             SELECT 
                 e.*,
-                u.user as author_name,
+                u.user as username,
                 (SELECT COUNT(*) FROM likes WHERE entry_id = e.id) as likes_count,
                 (SELECT COUNT(*) FROM dislikes WHERE entry_id = e.id) as dislikes_count,
                 (SELECT COUNT(*) FROM comments WHERE entry_id = e.id) as comments_count,
@@ -52,33 +53,121 @@ class PostRepository extends Repository
     }
 
     /**
-     * Obtiene una entrada específica con toda su información de interacciones
-     * y el estado actual del usuario que hace la petición.
+     * Obtiene los posts más relevantes ordenados por fecha, likes y comentarios
+     * 
+     * @param int|null $limit Número máximo de posts a retornar
+     * @return array Lista de posts con información de usuario y métricas
      */
-    public static function getEntry(int $postId, int $userId): ?array
+    public static function getRelevantPosts(?int $limit = null): array
+    {
+        $userId = Auth::id();
+
+        $query = "
+            SELECT 
+                e.*,
+                u.user as username,
+                COUNT(DISTINCT l.user_id) as likes_count,
+                COUNT(DISTINCT d.user_id) as dislikes_count,
+                COUNT(DISTINCT c.id) as comments_count,
+                EXISTS(SELECT 1 FROM likes WHERE entry_id = e.id AND user_id = :current_user) as user_liked,
+                EXISTS(SELECT 1 FROM dislikes WHERE entry_id = e.id AND user_id = :current_user2) as user_disliked
+            FROM entries e
+            LEFT JOIN users u ON e.user_id = u.id
+            LEFT JOIN likes l ON e.id = l.entry_id
+            LEFT JOIN dislikes d ON e.id = d.entry_id
+            LEFT JOIN comments c ON e.id = c.entry_id
+            GROUP BY e.id, u.user
+            ORDER BY 
+                e.date DESC,
+                likes_count DESC,
+                comments_count DESC
+        ";
+
+        if ($limit) {
+            $query .= " LIMIT :limit";
+            $param['limit'] = $limit;
+        }
+
+        $param['current_user'] = $userId;
+        $param['current_user2'] = $userId;
+
+        return Database::select($query, $param);
+    }
+
+    /**
+     * Obtiene los posts de un usuario específico
+     */
+    public static function getPostsByUser(int $userId): array
     {
         $query = "
             SELECT 
                 e.*,
-                u.user as author_name,
-                (SELECT COUNT(*) FROM likes WHERE entry_id = e.id) as likes_count,
-                (SELECT COUNT(*) FROM dislikes WHERE entry_id = e.id) as dislikes_count,
-                (SELECT COUNT(*) FROM comments WHERE entry_id = e.id) as comments_count,
-                EXISTS(SELECT 1 FROM likes WHERE entry_id = e.id AND user_id = :user_id) as user_liked,
-                EXISTS(SELECT 1 FROM dislikes WHERE entry_id = e.id AND user_id = :user_id2) as user_disliked
+                u.user as username,
+                COUNT(DISTINCT l.user_id) as likes_count,
+                COUNT(DISTINCT d.user_id) as dislikes_count,
+                COUNT(DISTINCT c.id) as comments_count,
+                EXISTS(SELECT 1 FROM likes WHERE entry_id = e.id AND user_id = :current_user) as user_liked,
+                EXISTS(SELECT 1 FROM dislikes WHERE entry_id = e.id AND user_id = :current_user2) as user_disliked
             FROM entries e
-            INNER JOIN users u ON e.user_id = u.id
-            WHERE e.id = :entry_id
-            LIMIT 1
+            LEFT JOIN users u ON e.user_id = u.id
+            LEFT JOIN likes l ON e.id = l.entry_id
+            LEFT JOIN dislikes d ON e.id = d.entry_id
+            LEFT JOIN comments c ON e.id = c.entry_id
+            WHERE e.user_id = :userId
+            GROUP BY e.id, u.user
+            ORDER BY e.date DESC
         ";
 
-        $result = Database::select($query, [
-            'entry_id' => $postId,
-            'user_id' => $userId,
-            'user_id2' => $userId
+        return Database::select($query, [
+            'userId' => $userId,
+            'current_user' => $userId,
+            'current_user2' => $userId,
         ]);
+    }
 
-        return $result ? $result[0] : null;
+    /**
+     * Obtiene una entrada específica con toda su información de interacciones
+     * y el estado actual del usuario que hace la petición.
+     */
+    public static function getPost(int $postId): ?array
+    {
+        // Primero obtenemos el post con su información básica y métricas
+        $query = "
+            SELECT 
+                e.*,
+                u.user as username,
+                COUNT(DISTINCT l.user_id) as likes_count,
+                COUNT(DISTINCT d.user_id) as dislikes_count,
+                COUNT(DISTINCT c.id) as comments_count 
+            FROM entries e
+            LEFT JOIN users u ON e.user_id = u.id
+            LEFT JOIN likes l ON e.id = l.entry_id
+            LEFT JOIN dislikes d ON e.id = d.entry_id
+            LEFT JOIN comments c ON e.id = c.entry_id
+            WHERE e.id = :postId
+            GROUP BY e.id, u.user
+        ";
+
+        $posts = Database::select($query, ['postId' => $postId]);
+        if (empty($posts)) {
+            return null;
+        }
+
+        $post = $posts[0];
+
+        $commentQuery = "
+            SELECT 
+                c.*,
+                u.user as username
+            FROM comments c
+            LEFT JOIN users u ON c.user_id = u.id
+            WHERE c.entry_id = :postId
+            ORDER BY c.date DESC
+        ";
+
+        $post['comments'] = Database::select($commentQuery, ['postId' => $postId]);
+
+        return $post;
     }
 
     /**
@@ -111,8 +200,8 @@ class PostRepository extends Repository
     public static function addLike(int $postId, int $userId): void
     {
         Database::insert(
-            "INSERT INTO likes (entry_id, user_id) VALUES (:entry_id, :user_id)",
-            ['entry_id' => $postId, 'user_id' => $userId]
+            "INSERT INTO likes (entry_id, user_id) VALUES (:post_id, :user_id)",
+            ['post_id' => $postId, 'user_id' => $userId]
         );
     }
 
@@ -122,8 +211,8 @@ class PostRepository extends Repository
     public static function removeLike(int $postId, int $userId): void
     {
         Database::delete(
-            "DELETE FROM likes WHERE entry_id = :entry_id AND user_id = :user_id",
-            ['entry_id' => $postId, 'user_id' => $userId]
+            "DELETE FROM likes WHERE entry_id = :post_id AND user_id = :user_id",
+            ['post_id' => $postId, 'user_id' => $userId]
         );
     }
 
@@ -133,8 +222,8 @@ class PostRepository extends Repository
     public static function addDislike(int $postId, int $userId): void
     {
         Database::insert(
-            "INSERT INTO dislikes (entry_id, user_id) VALUES (:entry_id, :user_id)",
-            ['entry_id' => $postId, 'user_id' => $userId]
+            "INSERT INTO dislikes (entry_id, user_id) VALUES (:post_id, :user_id)",
+            ['post_id' => $postId, 'user_id' => $userId]
         );
     }
 
@@ -144,15 +233,15 @@ class PostRepository extends Repository
     public static function removeDislike(int $postId, int $userId): void
     {
         Database::delete(
-            "DELETE FROM dislikes WHERE entry_id = :entry_id AND user_id = :user_id",
-            ['entry_id' => $postId, 'user_id' => $userId]
+            "DELETE FROM dislikes WHERE entry_id = :post_id AND user_id = :user_id",
+            ['post_id' => $postId, 'user_id' => $userId]
         );
     }
 
     /**
      * Crea una nueva entrada
      */
-    public static function createEntry(int $userId, string $text): int
+    public static function createPost(int $userId, string $text): int
     {
         return self::create([
             'user_id' => $userId,
@@ -164,40 +253,40 @@ class PostRepository extends Repository
     /**
      * Elimina una entrada y todas sus interacciones asociadas
      */
-    public static function deleteEntry(int $postId, int $userId): bool
+    public static function deletePost(int $postId, int $userId): bool
     {
         try {
             Database::beginTransaction();
 
             // Verificamos que el usuario sea el propietario de la entrada
-            $entry = self::getPost($postId, $userId);
-            if (!$entry || $entry['user_id'] !== $userId) {
+            $post = self::getPost($postId, $userId);
+            if (!$post || $post['user_id'] !== $userId) {
                 Database::rollback();
                 return false;
             }
 
             // Eliminamos todos los likes
             Database::delete(
-                "DELETE FROM likes WHERE entry_id = :entry_id",
-                ['entry_id' => $postId]
+                "DELETE FROM likes WHERE entry_id = :post_id",
+                ['post_id' => $postId]
             );
 
             // Eliminamos todos los dislikes
             Database::delete(
-                "DELETE FROM dislikes WHERE entry_id = :entry_id",
-                ['entry_id' => $postId]
+                "DELETE FROM dislikes WHERE entry_id = :post_id",
+                ['post_id' => $postId]
             );
 
             // Eliminamos todos los comentarios
             Database::delete(
-                "DELETE FROM comments WHERE entry_id = :entry_id",
-                ['entry_id' => $postId]
+                "DELETE FROM comments WHERE entry_id = :post_id",
+                ['post_id' => $postId]
             );
 
             // Finalmente eliminamos la entrada
             Database::delete(
-                "DELETE FROM entries WHERE id = :entry_id AND user_id = :user_id",
-                ['entry_id' => $postId, 'user_id' => $userId]
+                "DELETE FROM entries WHERE id = :post_id AND user_id = :user_id",
+                ['post_id' => $postId, 'user_id' => $userId]
             );
 
             Database::commit();
@@ -214,9 +303,9 @@ class PostRepository extends Repository
     public static function addComment(int $postId, int $userId, string $text): int
     {
         return Database::insert(
-            "INSERT INTO comments (entry_id, user_id, text, date) VALUES (:entry_id, :user_id, :text, NOW())",
+            "INSERT INTO comments (entry_id, user_id, text, date) VALUES (:post_id, :user_id, :text, NOW())",
             [
-                'entry_id' => $postId,
+                'post_id' => $postId,
                 'user_id' => $userId,
                 'text' => $text
             ]
