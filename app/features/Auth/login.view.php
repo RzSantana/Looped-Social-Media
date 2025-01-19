@@ -1,8 +1,3 @@
-<?php
-
-use Core\Session;
-?>
-
 <main>
     <div class="auth-container">
         <div class="title-container">

@@ -99,7 +99,7 @@ class UserRepository extends Repository
      */
     public static function getFollowers(int $userId): array
     {
-        $query = "SELECT u.* FROM users u
+        $query = "SELECT u.id, u.user FROM users u
                  INNER JOIN follows f ON f.user_id = u.id
                  WHERE f.user_followed = :userId";
         return Database::select($query, ['userId' => $userId]);
@@ -120,7 +120,7 @@ class UserRepository extends Repository
      */
     public static function getFollowing(int $userId): array
     {
-        $query = "SELECT u.* FROM users u
+        $query = "SELECT u.id, u.user FROM users u
                  INNER JOIN follows f ON f.user_followed = u.id
                  WHERE f.user_id = :userId";
         return Database::select($query, ['userId' => $userId]);

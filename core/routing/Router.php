@@ -61,6 +61,7 @@ class Router
                 // Extraemos las definiciones de la ruta 
                 $handler = $routeObject->handler;
                 $layout = $routeObject->layout ?? null;
+                $layoutData = $routeObject->layoutData ?? [];
 
                 if (is_callable($handler)) {
                     $content = call_user_func_array($handler, $params);
@@ -77,7 +78,7 @@ class Router
 
                 // Renderizar el layout con el contenido si hay un layout
                 if ($layout) {
-                    self::renderLayout($layout, $content);
+                    self::renderLayout($layout, $content, $layoutData);
                 } else {
                     print($content);
                 }
@@ -114,12 +115,13 @@ class Router
      * @throws InvalidArgumentException Si el archivo de layout no existe.
      * @return void
      */
-    public static function renderLayout(string $layout, string $content): void
+    public static function renderLayout(string $layout, string $content, array $data = []): void
     {
         $layoutFile = $_SERVER['DOCUMENT_ROOT'] . '/resources/layouts/' . $layout . '.layout.php';
 
         if (file_exists($layoutFile)) {
             $slot = $content;
+            $data = $data;
             require_once($layoutFile);
         } else {
             throw new InvalidArgumentException("El layout $layout no existe");

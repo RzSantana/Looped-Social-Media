@@ -22,6 +22,12 @@ class Route
      */
     public ?string $layout = null;
 
+    /**
+     * @var array $layoutData
+     * Datos para el layout opcional para la ruta.
+     */
+    public array $layoutData = [];
+
     private ?string $middleware = null;
 
     /**
@@ -40,9 +46,10 @@ class Route
      * @param string $layout Nombre del layout.
      * @return self Retorna la instancia actual para permitir el encadenamiento de métodos.
      */
-    public function layout(string $layout): self
+    public function layout(string $layout, array $data = []): self
     {
         $this->layout = $layout;
+        $this->layoutData = $data; 
         return $this;
     }
 

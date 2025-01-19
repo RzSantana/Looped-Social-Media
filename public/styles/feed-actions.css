@@ -1,0 +1,27 @@
+.actions-feed {
+    position: fixed;
+    right: 1rem;
+    display: flex;
+    flex-direction: column;
+    place-content: center;
+    gap: 1rem;
+
+    padding: 1rem;
+
+    width: fit-content;
+    min-height: 100%;
+
+    & .active {
+        & img {
+            opacity: 1;
+        }
+    }
+
+    & a {
+        text-decoration: none;
+
+        & img {
+            opacity: 0.4;
+        }
+    }
+}
