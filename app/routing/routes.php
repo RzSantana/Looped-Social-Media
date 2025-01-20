@@ -7,6 +7,7 @@ use App\Features\Search\SearchController;
 use App\Features\User\UserController;
 use Core\Auth\AuthMiddleware;
 use Core\Routing\Router;
+use Core\Session;
 use Core\View\View;
 
 // Rutas públicas
@@ -29,7 +30,11 @@ Router::get('/', [FeedController::class, 'showFeed'])
 
 // Ruta para la busqueda
 Router::get('/search', [SearchController::class, 'showSearch'])
-    ->layout('main', ['activeSearch' => true, 'search' => true])
+    ->layout('main', [
+        'activeSearch' => true, 
+        'search' => true, 
+        'valueSearch' => $_GET['user'] ?? ''
+    ])
     ->middleware(AuthMiddleware::class);
 
 // Ruta para la busqueda

@@ -51,8 +51,8 @@ class NewController extends Controller {
                 exit;
             }
 
-            // Redirigir al feed después de crear la publicación
-            header('Location: /');
+            // Redirigir al perfil después de crear la publicación
+            header('Location: /profile');
             exit;
         } catch (\Exception $e) {
             Session::flash('error', 'Error al crear la publicación');

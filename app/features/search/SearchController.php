@@ -4,7 +4,6 @@ namespace App\Features\Search;
 
 use App\Features\Post\PostRepository;
 use App\Features\User\UserRepository;
-use Core\Auth\Auth;
 use Core\Controller;
 
 class SearchController extends Controller {

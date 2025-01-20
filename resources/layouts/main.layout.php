@@ -44,7 +44,7 @@ use Core\Auth\Auth;
                 <?php if (isset($data['search'])): ?>
                     <li>
                         <form action="/search" method="get">
-                            <input type="text" name="user" id="search" placeholder="Buscar">
+                            <input type="text" name="user" id="search" placeholder="Buscar" value="<?= $data['valueSearch'] ?>">
                         </form>
                     </li>
                 <?php endif; ?>
