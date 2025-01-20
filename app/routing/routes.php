@@ -2,6 +2,7 @@
 
 use App\Features\Auth\AuthController;
 use App\Features\Feed\FeedController;
+use App\Features\New\NewController;
 use App\Features\Search\SearchController;
 use App\Features\User\UserController;
 use Core\Auth\AuthMiddleware;
@@ -29,6 +30,13 @@ Router::get('/', [FeedController::class, 'showFeed'])
 // Ruta para la busqueda
 Router::get('/search', [SearchController::class, 'showSearch'])
     ->layout('main', ['activeSearch' => true, 'search' => true])
+    ->middleware(AuthMiddleware::class);
+
+// Ruta para la busqueda
+Router::get('/new', [NewController::class, 'showNew'])
+    ->layout('main', ['activeNew' => true])
+    ->middleware(AuthMiddleware::class);
+Router::post('/new', [NewController::class, 'createPost'])
     ->middleware(AuthMiddleware::class);
 
 // Ruta para ver perfil de usuario
