@@ -32,6 +32,22 @@ class UserController extends Controller
         ]);
     }
 
+    public static function showProfileEdit(): string
+    {
+        $userId = Auth::id();
+
+        // Obtener datos del usuario actual
+        $user = UserRepository::find($userId);
+
+        // Obtener posts del usuario
+        $posts = PostRepository::getPostsByUser($userId);
+
+        return self::view('edit', [
+            'user' => $user,
+            'posts' => $posts,
+        ]);
+    }
+
     public static function showUserProfile(int $userId): string
     {
         $currentUserId = Auth::id();

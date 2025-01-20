@@ -7,10 +7,8 @@ use App\Features\Search\SearchController;
 use App\Features\User\UserController;
 use Core\Auth\AuthMiddleware;
 use Core\Routing\Router;
-use Core\Session;
-use Core\View\View;
 
-// Rutas públicas
+// Rutas públicas =================================================
 
 // Rutas para el registro
 Router::get('/register', [AuthController::class, 'showRegisterForm'])
@@ -23,7 +21,7 @@ Router::get('/login', [AuthController::class, 'showLoginForm'])
 Router::post('/login', [AuthController::class, 'login']);
 Router::get('/logout', [AuthController::class, 'logout']);
 
-// Rutas protegidas
+// Rutas protegidas ===============================================
 Router::get('/', [FeedController::class, 'showFeed'])
     ->layout('main', ['activeHome' => true])
     ->middleware(AuthMiddleware::class);
@@ -37,7 +35,7 @@ Router::get('/search', [SearchController::class, 'showSearch'])
     ])
     ->middleware(AuthMiddleware::class);
 
-// Ruta para la busqueda
+// Ruta para crear un nuevo post
 Router::get('/new', [NewController::class, 'showNew'])
     ->layout('main', ['activeNew' => true])
     ->middleware(AuthMiddleware::class);
@@ -48,17 +46,16 @@ Router::post('/new', [NewController::class, 'createPost'])
 Router::get('/profile', [UserController::class, 'showProfile'])
     ->layout('main')
     ->middleware(AuthMiddleware::class);
-
-// Ruta para ver perfil de otros usuarios
+Router::get('/profile/edit', [UserController::class, 'showProfileEdit'])
+    ->layout('main')
+    ->middleware(AuthMiddleware::class);
 Router::get('/user/:id', [UserController::class, 'showUserProfile'])
     ->layout('main')
     ->middleware(AuthMiddleware::class);
 
-// Ruta para seguir a un usuario
+// Ruta para seguir y dejar de seguir a un usuario
 Router::post('/follow/:id', [UserController::class, 'follow'])
     ->middleware(AuthMiddleware::class);
-
-// Ruta para dejar de seguir a un usuario
 Router::post('/unfollow/:id', [UserController::class, 'unfollow'])
     ->middleware(AuthMiddleware::class);
 

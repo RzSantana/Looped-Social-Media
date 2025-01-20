@@ -1,6 +1,6 @@
 #profile {
     display: grid;
-    grid-template: 1fr / minmax(25rem, 25rem) 1fr;
+    grid-template: 1fr / 25rem 1fr;
 
     & .header {
         max-height: 50rem;
@@ -27,6 +27,10 @@
                     background-color: rgba(255, 255, 255, 0.2);
                 }
             }
+        }
+
+        & .padding-max {
+            padding: 0 0 4.8rem 0;
         }
 
         & .profile-stats {
@@ -92,7 +96,7 @@
             & .unfollow {
                 & button {
                     background-color: var(--color-error);
-                    
+
                     &:hover {
                         background-color: var(--color-error-hover);
                     }
@@ -100,20 +104,62 @@
             }
         }
 
+        & .continer-owner-actions {
+            display: grid;
+            grid-template: 1fr / repeat(2, auto);
+            gap: 0.5rem;
+            align-items: end;
+        }
+
+        & .container-confirm {
+            display: flex;
+            place-content: center;
+            width: 10rem;
+        }
+
+        & .container-cancel {
+            display: flex;
+            place-content: center;
+
+            & .button {
+                background-color: var(--color-error);
+            }
+        }
+
+        & .container-edit {
+            display: flex;
+            place-content: center;
+        }
+
         & .container-logout {
             display: flex;
+            place-content: center;
 
-            & a {
+            & .button {
                 background-color: var(--color-error);
-                border-radius: 0.5rem;
-                color: white;
-                font-weight: 500;
-                text-decoration: none;
-                padding: 0.8rem 2rem;
 
                 &:hover {
                     background-color: var(--color-error-hover);
                 }
+            }
+        }
+
+        & .button {
+            padding: 0.8rem 2rem;
+            width: 100%;
+            height: fit-content;
+            background-color: var(--color-base);
+            border-radius: 0.5rem;
+            color: white;
+            font-weight: 500;
+            font-size: small;
+            text-wrap: nowrap;
+            text-decoration: none;
+            text-align: center;
+
+
+            &:hover {
+                background-color: var(--color-hover);
             }
         }
     }

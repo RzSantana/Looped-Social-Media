@@ -1,6 +1,5 @@
 <?php
 
-use Core\Auth\Auth;
 use Core\View\View;
 ?>
 
@@ -48,8 +47,13 @@ use Core\View\View;
 
         </div>
         <?php if ($isOwnProfile): ?>
-            <div class="container-logout">
-                <a href="/logout">Cerrar Sessión</a>
+            <div class="continer-owner-actions">
+                <div class="container-edit">
+                    <a href="/profile/edit" class="button">Editar Perfil</a>
+                </div>
+                <div class="container-logout">
+                    <a href="/logout" class="button">Cerrar Sessión</a>
+                </div>
             </div>
         <?php endif ?>
     </section>
