@@ -3,7 +3,7 @@
 use Core\View\View;
 ?>
 
-<main>
+<main id="feed">
     <?php if (!empty($following)): ?>
         <section>
             <div class="following">

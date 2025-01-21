@@ -2,7 +2,6 @@
 
 namespace Core\Routing;
 
-use Core\Session;
 use Exception;
 use InvalidArgumentException;
 
@@ -37,61 +36,108 @@ class Router
      * @return void
      */
     public static function processRequest(): void
-    {        
+    {
         $method = $_SERVER['REQUEST_METHOD'];
-        $uri = trim(strtok($_SERVER['REQUEST_URI'], '?'), '/');
+        $uri = self::getCurrentRoute();
 
+        try {
+            self::handleRequest($method, $uri);
+        } catch (Exception $e) {
+            self::handleError($e);
+        }
+    }
+
+    /**
+     * Maneja la solicitud HTTP entrante
+     */
+    private static function handleRequest(string $method, string $uri): void
+    {
         foreach (self::$routes[$method] as $route => $routeObject) {
-            assert(
-                $routeObject instanceof Route,
-                new Exception("El objeto de la ruta debe ser una instancia de la clase Route")
-            );
+            $params = self::matchRoute($route, $uri);
 
-            // Convertir la ruta en un patrón de expresión regular 
-            $pattern = preg_replace('/:[^\/]+/', '([^/]+)', $route);
-            if (preg_match("#^$pattern$#", $uri, $params)) {
-                array_shift($params);
-
-                // Si la ruta tiene middleware, lo ejecutamos
-                if ($middleware = $routeObject->getMiddleware()) {
-                    $middlewareInstance = new $middleware();
-                    $middlewareInstance->handle();
-                }
-
-                // Extraemos las definiciones de la ruta 
-                $handler = $routeObject->handler;
-                $layout = $routeObject->layout ?? null;
-                $layoutData = $routeObject->layoutData ?? [];
-
-                if (is_callable($handler)) {
-                    $content = call_user_func_array($handler, $params);
-                } else {
-                    [$controllerClass, $controllerMethod] = $handler;
-
-                    if (!method_exists($controllerClass, $controllerMethod)) {
-                        throw new InvalidArgumentException("El método $controllerMethod no existe en el controlador $controllerClass");
-                    }
-
-                    // Obtener el contenido renderizado del controlador
-                    $content = call_user_func_array([$controllerClass, $controllerMethod], $params);
-                }
-
-                // Renderizar el layout con el contenido si hay un layout
-                if ($layout) {
-                    self::renderLayout($layout, $content, $layoutData);
-                } else {
-                    print($content);
-                }
+            if ($params !== null) {
+                self::executeRoute($routeObject, $params);
                 return;
             }
         }
 
+        self::handle404();
+    }
+
+    /**
+     * Ejecuta la ruta encontrada con sus middlewares y controladores
+     */
+    private static function executeRoute(Route $route, array $params): void
+    {
+        self::executeMiddleware($route);
+        $content = self::executeHandler($route->handler, $params);
+        self::renderResponse($route, $content);
+    }
+
+    /**
+     * Ejecuta el middleware asociado a la ruta si existe
+     */
+    private static function executeMiddleware(Route $route): void
+    {
+        if ($middleware = $route->getMiddleware()) {
+            $middlewareInstance = new $middleware();
+            $middlewareInstance->handle();
+        }
+    }
+
+    /**
+     * Ejecuta el controlador de la ruta y obtiene el contenido
+     */
+    private static function executeHandler(callable|array $handler, array $params): string
+    {
+        if (is_callable($handler)) {
+            return call_user_func_array($handler, $params);
+        }
+
+        [$controllerClass, $controllerMethod] = $handler;
+
+        if (!method_exists($controllerClass, $controllerMethod)) {
+            throw new InvalidArgumentException(
+                "El método $controllerMethod no existe en el controlador $controllerClass"
+            );
+        }
+
+        return call_user_func_array([$controllerClass, $controllerMethod], $params);
+    }
+
+    /**
+     * Renderiza la respuesta con el layout apropiado
+     */
+    private static function renderResponse(Route $route, string $content): void
+    {
+        if ($layout = $route->layout) {
+            self::renderLayout($layout, $content, $route->layoutData ?? []);
+        } else {
+            print($content);
+        }
+    }
+
+    /**
+     * Maneja el caso cuando no se encuentra la ruta
+     */
+    private static function handle404(): void
+    {
         if (self::$notFoundCallback) {
             call_user_func(self::$notFoundCallback);
         } else {
             http_response_code(404);
             print("404 Not Found");
         }
+    }
+
+    /**
+     * Maneja errores durante el procesamiento de la solicitud
+     */
+    private static function handleError(Exception $e): void
+    {
+        // Aquí podríamos implementar un manejo más sofisticado de errores
+        http_response_code(500);
+        print("Error interno del servidor: " . $e->getMessage());
     }
 
     public static function middleware(string $middlewareClass): Route
@@ -131,15 +177,20 @@ class Router
     /**
      * Añade una nueva ruta a la lista de rutas.
      * 
-     * @param string $method Método HTTP (GET, POST, PUT, DELETE)
-     * @param string $uri URI de la ruta.
-     * @param callable|array $handler Definición del controlador para la ruta.
-     * @return Route La instancia de la ruta añadida.
+     * @param string $method Método HTTP válido ('GET', 'POST', 'PUT', 'DELETE')
+     * @param string $uri URI válida que comienza con '/'
+     * @param callable|array{0: class-string, 1: string} $handler Controlador de la ruta
+     * @throws RouterException Si los parámetros no son válidos
      */
     public static function addRoute(string $method, string $uri, callable|array $handler): Route
     {
         $uri = trim($uri, '/');
         $route = new Route($handler);
+
+        if (!in_array($method, ['GET', 'POST', 'PUT', 'DELETE'])) {
+            throw new Exception("Método HTTP no soportado: $method");
+        }
+
         self::$routes[strtoupper($method)][$uri] = $route;
         return $route;
     }
@@ -201,5 +252,71 @@ class Router
     public static function setNotFoundCallback(callable $callback): void
     {
         self::$notFoundCallback = $callback;
+    }
+
+    /**
+     * Verifica si la ruta actual coincide con la ruta o rutas especificadas
+     * 
+     * @param string|array $routes Una ruta o array de rutas a verificar
+     * @return bool True si la ruta actual coincide con alguna de las especificadas
+     */
+    public static function isCurrentRoute(string|array $routes): bool
+    {
+        $currentPath = self::getCurrentRoute();
+        $currentMethod = $_SERVER['REQUEST_METHOD'];
+        $routes = is_array($routes) ? $routes : [$routes];
+
+        foreach ($routes as $route) {
+            $routePattern = trim($route, '/');
+            $routeExists = isset(self::$routes[$currentMethod][$routePattern]);
+
+            if ($routeExists) {
+                $params = self::matchRoute($routePattern, $currentPath);
+
+                if ($params !== null) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Obtiene la ruta actual de la aplicación
+     * 
+     * @return string La ruta actual normalizada
+     */
+    public static function getCurrentRoute(): string
+    {
+        return trim(strtok($_SERVER['REQUEST_URI'], '?'), '/');
+    }
+
+    /**
+     * Comprueba si una ruta coincide con un patrón y extrae sus parámetros
+     * 
+     * @param string $pattern El patrón de ruta a comprobar
+     * @param string $path La ruta actual
+     * @return array|null Retorna un array con los parámetros si hay coincidencia, null si no coincide
+     */
+    private static function matchRoute(string $pattern, string $path): ?array
+    {
+        $trimmedPattern = trim($pattern, '/');
+        $trimmedPath = trim($path, '/');
+
+        if ($trimmedPattern === $trimmedPath) {
+            return [];
+        }
+
+        // Convertimos el patrón de ruta en una expresión regular
+        $regexPattern = preg_replace('/:[^\/]+/', '([^/]+)', $pattern);
+
+        // Si hay coincidencia, preg_match llenará $matches con los grupos capturados
+        if (preg_match("#^$regexPattern$#", $path, $matches)) {
+            array_shift($matches);
+            return $matches;
+        }
+
+        return null;
     }
 }

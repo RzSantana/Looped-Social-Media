@@ -1,0 +1,16 @@
+#posts {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(25rem, 1fr));
+    grid-template-rows: min-content;
+    gap: 2rem;
+    
+    justify-content: center;
+    padding: 0 3rem;
+}
+
+.not-posts {
+    width: 100%;
+    display: grid;
+    place-content: center;
+    text-align: center;
+}

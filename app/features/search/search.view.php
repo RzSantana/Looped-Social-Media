@@ -1,9 +1,10 @@
-<main>
-    <?php
+<?php
 
-    use Core\View\View;
+use Core\View\View;
+?>
 
-    if (isset($users)): ?>
+<main id="feed">
+    <?php if (isset($users)): ?>
         <section class="search-results">
             <h2>Resultados de búsqueda</h2>
             <?php if (empty($users)): ?>

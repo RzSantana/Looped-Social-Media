@@ -1,14 +1,13 @@
 #profile {
     display: grid;
-    grid-template: 1fr / 25rem 1fr;
+    grid-template-columns: 25rem 1fr;
+    overflow: hidden;
 
     & .header {
-        max-height: 85vh;
-
         display: grid;
         grid-template: auto auto 1fr / 1fr;
         gap: 2rem;
-        padding: 3rem;
+        padding: 0 3rem;
 
         & .profile-image {
             display: flex;
@@ -157,7 +156,6 @@
             text-decoration: none;
             text-align: center;
 
-
             &:hover {
                 background-color: var(--color-hover);
             }
@@ -165,6 +163,14 @@
     }
 
     & .content-posts {
+        overflow-y: auto;
+        scrollbar-width: none;
+        padding: 0 3rem 2rem 0;
+
+        /* Aplicamos la máscara para el efecto de fade */
+        -webkit-mask-image: linear-gradient(to bottom, black 95%, transparent);
+        mask-image: linear-gradient(to bottom, black 95%, transparent);
+
         & h2 {
             padding: 2rem 3rem;
         }

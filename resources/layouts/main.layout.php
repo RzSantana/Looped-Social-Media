@@ -1,6 +1,8 @@
 <?php
 
 use Core\Auth\Auth;
+use Core\Routing\Router;
+
 ?>
 
 <!DOCTYPE html>
@@ -12,11 +14,23 @@ use Core\Auth\Auth;
     <title>Looped</title>
     <link rel="stylesheet" href="/styles/global.css">
     <link rel="stylesheet" href="/styles/mainLayout.css">
-    <link rel="stylesheet" href="/styles/feed.css">
-    <link rel="stylesheet" href="/styles/feed-actions.css">
+    <!-- <link rel="stylesheet" href="/styles/feed-actions.css"> -->
+    
     <link rel="stylesheet" href="/styles/post.css">
-    <link rel="stylesheet" href="/styles/profile.css">
-    <link rel="stylesheet" href="/styles/new-post.css">
+    <link rel="stylesheet" href="/styles/grid-feed.css">
+    
+    <?php if (Router::isCurrentRoute(['profile', 'profile/edit', 'user/:id'])): ?>
+        <link rel="stylesheet" href="/styles/profile.css">
+    <?php endif ?>
+
+    <?php if (Router::isCurrentRoute(['/', 'search'])): ?>
+        <link rel="stylesheet" href="/styles/feed.css">
+    <?php endif ?>
+
+
+    <?php if (Router::isCurrentRoute('new')): ?>
+        <link rel="stylesheet" href="/styles/new-post.css">
+    <?php endif ?>
 </head>
 
 <body>
@@ -27,14 +41,14 @@ use Core\Auth\Auth;
         <nav>
             <ul>
                 <li>
-                    <a href="/" class="<?= isset($data['activeHome']) ? 'active' : '' ?>">
+                    <a href="/" class="button-action <?= isset($data['activeHome']) ? 'active' : '' ?>">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512">
                             <path d="M575.8 255.5c0 18-15 32.1-32 32.1l-32 0 .7 160.2c0 2.7-.2 5.4-.5 8.1l0 16.2c0 22.1-17.9 40-40 40l-16 0c-1.1 0-2.2 0-3.3-.1c-1.4 .1-2.8 .1-4.2 .1L416 512l-24 0c-22.1 0-40-17.9-40-40l0-24 0-64c0-17.7-14.3-32-32-32l-64 0c-17.7 0-32 14.3-32 32l0 64 0 24c0 22.1-17.9 40-40 40l-24 0-31.9 0c-1.5 0-3-.1-4.5-.2c-1.2 .1-2.4 .2-3.6 .2l-16 0c-22.1 0-40-17.9-40-40l0-112c0-.9 0-1.9 .1-2.8l0-69.7-32 0c-18 0-32-14-32-32.1c0-9 3-17 10-24L266.4 8c7-7 15-8 22-8s15 2 21 7L564.8 231.5c8 7 12 15 11 24z" />
                         </svg>
                     </a>
                 </li>
                 <li>
-                    <a href="/search" class="<?= isset($data['activeSearch']) ? 'active' : '' ?>">
+                    <a href="/search" class="button-action <?= isset($data['activeSearch']) ? 'active' : '' ?>">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
                             <path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z" />
                         </svg>
@@ -63,17 +77,19 @@ use Core\Auth\Auth;
                     <path d="M168.2 384.9c-15-5.4-31.7-3.1-44.6 6.4c-8.2 6-22.3 14.8-39.4 22.7c5.6-14.7 9.9-31.3 11.3-49.4c1-12.9-3.3-25.7-11.8-35.5C60.4 302.8 48 272 48 240c0-79.5 83.3-160 208-160s208 80.5 208 160s-83.3 160-208 160c-31.6 0-61.3-5.5-87.8-15.1zM26.3 423.8c-1.6 2.7-3.3 5.4-5.1 8.1l-.3 .5c-1.6 2.3-3.2 4.6-4.8 6.9c-3.5 4.7-7.3 9.3-11.3 13.5c-4.6 4.6-5.9 11.4-3.4 17.4c2.5 6 8.3 9.9 14.8 9.9c5.1 0 10.2-.3 15.3-.8l.7-.1c4.4-.5 8.8-1.1 13.2-1.9c.8-.1 1.6-.3 2.4-.5c17.8-3.5 34.9-9.5 50.1-16.1c22.9-10 42.4-21.9 54.3-30.6c31.8 11.5 67 17.9 104.1 17.9c141.4 0 256-93.1 256-208S397.4 32 256 32S0 125.1 0 240c0 45.1 17.7 86.8 47.7 120.9c-1.9 24.5-11.4 46.3-21.4 62.9zM144 272a32 32 0 1 0 0-64 32 32 0 1 0 0 64zm144-32a32 32 0 1 0 -64 0 32 32 0 1 0 64 0zm80 32a32 32 0 1 0 0-64 32 32 0 1 0 0 64z" />
                 </svg>
             </a> -->
-            <a href="/new"  class="<?= isset($data['activeNew']) ? 'active' : '' ?>">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
-                    <path d="M64 80c-8.8 0-16 7.2-16 16l0 320c0 8.8 7.2 16 16 16l320 0c8.8 0 16-7.2 16-16l0-320c0-8.8-7.2-16-16-16L64 80zM0 96C0 60.7 28.7 32 64 32l320 0c35.3 0 64 28.7 64 64l0 320c0 35.3-28.7 64-64 64L64 480c-35.3 0-64-28.7-64-64L0 96zM200 344l0-64-64 0c-13.3 0-24-10.7-24-24s10.7-24 24-24l64 0 0-64c0-13.3 10.7-24 24-24s24 10.7 24 24l0 64 64 0c13.3 0 24 10.7 24 24s-10.7 24-24 24l-64 0 0 64c0 13.3-10.7 24-24 24s-24-10.7-24-24z" />
-                </svg>
-            </a>
             <a href="/profile" class="profile">
                 <?php $photoProfile = 'https://picsum.photos/seed/profile' . Auth::id() . '/' . 100 ?>
                 <img src="<?= $photoProfile ?>" alt="">
             </a>
         </div>
     </header>
+    <div class="container-new">
+        <a href="/new" class="button-action <?= isset($data['activeNew']) ? 'active' : '' ?>">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+                <path d="M64 80c-8.8 0-16 7.2-16 16l0 320c0 8.8 7.2 16 16 16l320 0c8.8 0 16-7.2 16-16l0-320c0-8.8-7.2-16-16-16L64 80zM0 96C0 60.7 28.7 32 64 32l320 0c35.3 0 64 28.7 64 64l0 320c0 35.3-28.7 64-64 64L64 480c-35.3 0-64-28.7-64-64L0 96zM200 344l0-64-64 0c-13.3 0-24-10.7-24-24s10.7-24 24-24l64 0 0-64c0-13.3 10.7-24 24-24s24 10.7 24 24l0 64 64 0c13.3 0 24 10.7 24 24s-10.7 24-24 24l-64 0 0 64c0 13.3-10.7 24-24 24s-24-10.7-24-24z" />
+            </svg>
+        </a>
+    </div>
     <?= $slot ?>
 </body>
 
