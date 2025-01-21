@@ -1,10 +1,13 @@
 <div class="post">
+    <a href=""></a>
     <div class="image">
-        <?php if (isset($post['photo'])): ?>
-            <img src="<?= $post['photo'] ?>" alt="">
-        <?php else: ?>
-            <div class="not-image"></div>
-        <?php endif ?>
+        <a href="/post/<?= $post['id'] ?>">
+            <?php if (isset($post['photo'])): ?>
+                <img src="<?= $post['photo'] ?>" alt="">
+            <?php else: ?>
+                <div class="not-image"></div>
+            <?php endif ?>
+        </a>
     </div>
     <div class="info-post">
         <div class="user">

@@ -3,7 +3,7 @@
     grid-template: 1fr / 25rem 1fr;
 
     & .header {
-        max-height: 50rem;
+        max-height: 85vh;
 
         display: grid;
         grid-template: auto auto 1fr / 1fr;

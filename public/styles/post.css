@@ -4,6 +4,11 @@
 
     width: 100%;
     height: fit-content;
+    border-radius: 0.5rem;
+
+    &:hover {
+        outline: rgba(255, 255, 255, 0.1);
+    }
 
     & .image {
         & img {
@@ -25,6 +30,7 @@
         display: grid;
         grid-template: 1fr / 1fr auto;
         padding: 1rem;
+        gap: 0.8rem;
 
         & .user {
             display: grid;
@@ -63,7 +69,7 @@
                     font-weight: 500;
                     color: white;
                     text-decoration: none;
-                
+
                     &:hover {
                         color: var(--color-base);
                     }
@@ -72,26 +78,25 @@
                 & .description {
                     font-size: small;
                     opacity: 0.6;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
                 }
             }
-
         }
     }
     & .actions {
         display: grid;
-        grid-template: 1fr / 1fr auto auto;
+        grid-template: 1fr / auto auto;
         gap: 1rem;
 
-        
         & .action {
             display: flex;
             flex-direction: row;
-            justify-content: end;
-            align-items: center;
-            gap: .4rem;
-            
+            gap: 0.4rem;
+
             font-size: small;
-            
+
             & .active {
                 & svg {
                     fill: var(--color-active);
@@ -100,10 +105,10 @@
         }
 
         & .like {
-            width: 1.5rem;
-            height: 1.5rem;
+            width: 1.2rem;
+            height: 1.2rem;
             cursor: pointer;
-            
+
             & svg {
                 width: 100%;
                 height: 100%;
@@ -115,10 +120,10 @@
             }
         }
         & .dislike {
-            width: 1.5rem;
-            height: 1.5rem;
+            width: 1.2rem;
+            height: 1.2rem;
             cursor: pointer;
-            
+
             & svg {
                 width: 100%;
                 height: 100%;
@@ -130,5 +135,4 @@
             }
         }
     }
-
 }
