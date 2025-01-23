@@ -1,4 +1,6 @@
 <main>
+    <h1 class="logo">Looped</h1>
+
     <div class="auth-container">
         <div class="title-container">
             <h1>Iniciar Sesión</h1>

@@ -14,7 +14,7 @@ class PostRepository extends Repository
     /**
      * Obtiene los post del feed para un usuario específico.
      * Incluye las entradas de los usuarios que sigue y sus propias entradas.
-     * 
+     *
      * @param int $userId ID del usuario
      * @param int $limit Límite de entradas a obtener
      * @param int $offset Desplazamiento para paginación
@@ -23,7 +23,7 @@ class PostRepository extends Repository
     public static function getFeedPost(int $userId, int $limit = 10, int $offset = 0): array
     {
         $query = "
-            SELECT 
+            SELECT
                 e.*,
                 u.user as username,
                 (SELECT COUNT(*) FROM likes WHERE entry_id = e.id) as likes_count,
@@ -54,7 +54,7 @@ class PostRepository extends Repository
 
     /**
      * Obtiene los posts más relevantes ordenados por fecha, likes y comentarios
-     * 
+     *
      * @param int|null $limit Número máximo de posts a retornar
      * @return array Lista de posts con información de usuario y métricas
      */
@@ -63,7 +63,7 @@ class PostRepository extends Repository
         $userId = Auth::id();
 
         $query = "
-            SELECT 
+            SELECT
                 e.*,
                 u.user as username,
                 COUNT(DISTINCT l.user_id) as likes_count,
@@ -77,7 +77,7 @@ class PostRepository extends Repository
             LEFT JOIN dislikes d ON e.id = d.entry_id
             LEFT JOIN comments c ON e.id = c.entry_id
             GROUP BY e.id, u.user
-            ORDER BY 
+            ORDER BY
                 e.date DESC,
                 likes_count DESC,
                 comments_count DESC
@@ -100,7 +100,7 @@ class PostRepository extends Repository
     public static function getPostsByUser(int $userId): array
     {
         $query = "
-            SELECT 
+            SELECT
                 e.*,
                 u.user as username,
                 COUNT(DISTINCT l.user_id) as likes_count,
@@ -120,8 +120,8 @@ class PostRepository extends Repository
 
         return Database::select($query, [
             'userId' => $userId,
-            'current_user' => $userId,
-            'current_user2' => $userId,
+            'current_user' => Auth::id(),
+            'current_user2' => Auth::id(),
         ]);
     }
 
@@ -133,12 +133,12 @@ class PostRepository extends Repository
     {
         // Primero obtenemos el post con su información básica y métricas
         $query = "
-            SELECT 
+            SELECT
                 e.*,
                 u.user as username,
                 COUNT(DISTINCT l.user_id) as likes_count,
                 COUNT(DISTINCT d.user_id) as dislikes_count,
-                COUNT(DISTINCT c.id) as comments_count 
+                COUNT(DISTINCT c.id) as comments_count
             FROM entries e
             LEFT JOIN users u ON e.user_id = u.id
             LEFT JOIN likes l ON e.id = l.entry_id
@@ -156,7 +156,7 @@ class PostRepository extends Repository
         $post = $posts[0];
 
         $commentQuery = "
-            SELECT 
+            SELECT
                 c.*,
                 u.user as username
             FROM comments c
@@ -209,7 +209,7 @@ class PostRepository extends Repository
      * Elimina un "me gusta" de una entrada
      */
     public static function removeLike(int $postId, int $userId): void
-    {
+{
         Database::delete(
             "DELETE FROM likes WHERE entry_id = :post_id AND user_id = :user_id",
             ['post_id' => $postId, 'user_id' => $userId]

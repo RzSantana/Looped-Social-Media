@@ -7,9 +7,9 @@ use InvalidArgumentException;
 
 /**
  * Clase Router
- * 
- * Esta clase maneja el enrutamiento de solicitudes HTTP dentro 
- * de la aplicación. 
+ *
+ * Esta clase maneja el enrutamiento de solicitudes HTTP dentro
+ * de la aplicación.
  */
 class Router
 {
@@ -29,10 +29,10 @@ class Router
 
     /**
      * Procesa la solicitud HTTP actual.
-     * 
+     *
      * Determina la ruta solicitada y ejecuta el controlador correspondiente.
      * Si la ruta no existe, se ejecuta el callback de 404.
-     * 
+     *
      * @return void
      */
     public static function processRequest(): void
@@ -155,7 +155,7 @@ class Router
 
     /**
      * Renderiza un layout con el contenido proporcionado.
-     * 
+     *
      * @param string $layout Nombre del archivo de layout (sin extensión).
      * @param string $content Contenido a ser insertado en el layout.
      * @throws InvalidArgumentException Si el archivo de layout no existe.
@@ -176,7 +176,7 @@ class Router
 
     /**
      * Añade una nueva ruta a la lista de rutas.
-     * 
+     *
      * @param string $method Método HTTP válido ('GET', 'POST', 'PUT', 'DELETE')
      * @param string $uri URI válida que comienza con '/'
      * @param callable|array{0: class-string, 1: string} $handler Controlador de la ruta
@@ -195,9 +195,9 @@ class Router
         return $route;
     }
 
-    /** 
+    /**
      * Añade una ruta GET.
-     * 
+     *
      * @param string $uri URI de la ruta.
      * @param callable|array $handler Definición del controlador para la ruta.
      * @return Route La instancia de la ruta añadida.
@@ -207,9 +207,9 @@ class Router
         return self::addRoute('GET', $uri, $handler);
     }
 
-    /** 
-     * Añade una ruta POST. 
-     * 
+    /**
+     * Añade una ruta POST.
+     *
      * @param string $uri URI de la ruta.
      * @param callable|array $handler Definición del controlador para la ruta.
      * @return Route La instancia de la ruta añadida.
@@ -221,7 +221,7 @@ class Router
 
     /**
      * Añade una ruta PUT.
-     * 
+     *
      * @param string $uri URI de la ruta.
      * @param callable|array $handler Definición del controlador para la ruta.
      * @return Route La instancia de la ruta añadida.
@@ -231,9 +231,9 @@ class Router
         return self::addRoute('PUT', $uri, $handler);
     }
 
-    /** 
-     * Añade una ruta DELETE. 
-     * 
+    /**
+     * Añade una ruta DELETE.
+     *
      * @param string $uri URI de la ruta.
      * @param callable|array $handler Definición del controlador para la ruta.
      * @return Route La instancia de la ruta añadida.
@@ -243,9 +243,9 @@ class Router
         return self::addRoute('DELETE', $uri, $handler);
     }
 
-    /** 
+    /**
      * Establece la función de callback para manejar rutas no encontradas (404).
-     * 
+     *
      * @param callable $callback Función de callback para 404.
      * @return void
      */
@@ -256,7 +256,7 @@ class Router
 
     /**
      * Verifica si la ruta actual coincide con la ruta o rutas especificadas
-     * 
+     *
      * @param string|array $routes Una ruta o array de rutas a verificar
      * @return bool True si la ruta actual coincide con alguna de las especificadas
      */
@@ -284,7 +284,7 @@ class Router
 
     /**
      * Obtiene la ruta actual de la aplicación
-     * 
+     *
      * @return string La ruta actual normalizada
      */
     public static function getCurrentRoute(): string
@@ -294,7 +294,7 @@ class Router
 
     /**
      * Comprueba si una ruta coincide con un patrón y extrae sus parámetros
-     * 
+     *
      * @param string $pattern El patrón de ruta a comprobar
      * @param string $path La ruta actual
      * @return array|null Retorna un array con los parámetros si hay coincidencia, null si no coincide

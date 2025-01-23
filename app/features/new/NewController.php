@@ -17,15 +17,16 @@ class NewController extends Controller {
         return self::view('new', [
             'user' => $user,
             'text' => Session::getFlash('text', ''),
-            'errors' => Session::getFlash('errors', [])  
+            'errors' => Session::getFlash('errors', [])
+            
         ]);
     }
 
-    public static function createPost(): void 
+    public static function createPost(): void
     {
         $userId = Auth::id();
         $text = trim($_POST['caption'] ?? '');
-        
+
         // Validación básica
         if (empty($text)) {
             Session::flash('errors', ['text' => 'El texto es requerido']);

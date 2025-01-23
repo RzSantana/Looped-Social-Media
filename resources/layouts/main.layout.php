@@ -13,12 +13,12 @@ use Core\Routing\Router;
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Looped</title>
     <link rel="stylesheet" href="/styles/global.css">
-    <link rel="stylesheet" href="/styles/mainLayout.css">
+    <link rel="stylesheet" href="/styles/main-layout.css">
     <!-- <link rel="stylesheet" href="/styles/feed-actions.css"> -->
-    
+
     <link rel="stylesheet" href="/styles/post.css">
     <link rel="stylesheet" href="/styles/grid-feed.css">
-    
+
     <?php if (Router::isCurrentRoute(['profile', 'profile/edit', 'user/:id'])): ?>
         <link rel="stylesheet" href="/styles/profile.css">
     <?php endif ?>
@@ -27,9 +27,12 @@ use Core\Routing\Router;
         <link rel="stylesheet" href="/styles/feed.css">
     <?php endif ?>
 
-
     <?php if (Router::isCurrentRoute('new')): ?>
         <link rel="stylesheet" href="/styles/new-post.css">
+    <?php endif ?>
+
+    <?php if (Router::isCurrentRoute('post/:id')): ?>
+        <link rel="stylesheet" href="/styles/post-view.css">
     <?php endif ?>
 </head>
 

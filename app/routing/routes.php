@@ -3,6 +3,7 @@
 use App\Features\Auth\AuthController;
 use App\Features\Feed\FeedController;
 use App\Features\New\NewController;
+use App\Features\Post\PostController;
 use App\Features\Search\SearchController;
 use App\Features\User\UserController;
 use Core\Auth\AuthMiddleware;
@@ -29,8 +30,8 @@ Router::get('/', [FeedController::class, 'showFeed'])
 // Ruta para la busqueda
 Router::get('/search', [SearchController::class, 'showSearch'])
     ->layout('main', [
-        'activeSearch' => true, 
-        'search' => true, 
+        'activeSearch' => true,
+        'search' => true,
         'valueSearch' => $_GET['user'] ?? ''
     ])
     ->middleware(AuthMiddleware::class);
@@ -59,6 +60,10 @@ Router::post('/follow/:id', [UserController::class, 'follow'])
 Router::post('/unfollow/:id', [UserController::class, 'unfollow'])
     ->middleware(AuthMiddleware::class);
 
+// Ruta para visualiar un post espeficico
+Router::get('/post/:id', [PostController::class, 'showPost'])
+    ->layout('main')
+    ->middleware(AuthMiddleware::class);
 // Rutas para likes y dislikes
 Router::get('/post/like/:id', [FeedController::class, 'toggleLike'])
     ->middleware(AuthMiddleware::class);

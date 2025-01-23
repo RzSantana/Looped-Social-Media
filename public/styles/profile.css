@@ -7,7 +7,7 @@
         display: grid;
         grid-template: auto auto 1fr / 1fr;
         gap: 2rem;
-        padding: 0 3rem;
+        padding: 0 4rem;
 
         & .profile-image {
             display: flex;
@@ -165,7 +165,7 @@
     & .content-posts {
         overflow-y: auto;
         scrollbar-width: none;
-        padding: 0 3rem 2rem 0;
+        padding: 0 3rem 3rem 0;
 
         /* Aplicamos la máscara para el efecto de fade */
         -webkit-mask-image: linear-gradient(to bottom, black 95%, transparent);
@@ -173,6 +173,10 @@
 
         & h2 {
             padding: 2rem 3rem;
+        }
+
+        #posts {
+            grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr));
         }
 
         & .not-posts {

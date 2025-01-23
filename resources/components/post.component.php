@@ -1,5 +1,4 @@
 <div class="post">
-    <a href=""></a>
     <div class="image">
         <a href="/post/<?= $post['id'] ?>">
             <?php if (isset($post['photo'])): ?>
