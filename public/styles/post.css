@@ -88,7 +88,7 @@
     }
     & .actions {
         display: grid;
-        grid-template: 1fr / auto auto;
+        grid-template: 1fr / auto auto auto;
         gap: 1rem;
 
         & .action {

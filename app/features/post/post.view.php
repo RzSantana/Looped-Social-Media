@@ -42,11 +42,11 @@ $post['date'] = $date->format('d M Y, H:i');
                 <div class="actions">
                     <div class="likes">
                         <span><?= $post['likes_count'] ?? 0 ?></span>
-                        <?= View::component('like', ['id' => $post['id'], 'liked' => $post['user_liked']]) ?>
+                        <?= View::component('icons/like', ['id' => $post['id'], 'liked' => $post['user_liked']]) ?>
                     </div>
                     <div class="dislikes">
                         <span><?= $post['dislikes_count'] ?? 0 ?></span>
-                        <?= View::component('dislike', ['id' => $post['id'], 'disliked' => $post['user_disliked'] ?? false]) ?>
+                        <?= View::component('icons/dislike', ['id' => $post['id'], 'disliked' => $post['user_disliked'] ?? false]) ?>
                     </div>
                 </div>
 

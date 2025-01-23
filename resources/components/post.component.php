@@ -42,12 +42,17 @@ use Core\View\View;
         <div class="actions">
             <div class="action">
                 <div><?= $post['likes_count'] ?? '0' ?></div>
-                <?= View::component('like', ['id' => $post['id'], 'liked' => $post['user_liked']]) ?>
+                <?= View::component('icons/like', ['id' => $post['id'], 'liked' => $post['user_liked']]) ?>
             </div>
 
             <div class="action">
                 <div><?= $post['dislikes_count'] ?? '0' ?></div>
-                <?= View::component('dislike', ['id' => $post['id'], 'disliked' => $post['user_disliked']]) ?>
+                <?= View::component('icons/dislike', ['id' => $post['id'], 'disliked' => $post['user_disliked']]) ?>
+            </div>
+
+            <div class="action">
+                <div><?= $post['comments_count'] ?? '0' ?></div>
+                <?= View::component('icons/comment', ['id' => $post['id']]) ?>
             </div>
         </div>
     </div>

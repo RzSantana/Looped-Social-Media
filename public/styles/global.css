@@ -34,32 +34,48 @@ html, body {
 }
 
 & .like {
-            width: 1.2rem;
-            height: 1.2rem;
-            cursor: pointer;
+    width: 1.2rem;
+    height: 1.2rem;
+    cursor: pointer;
 
-            & svg {
-                width: 100%;
-                height: 100%;
-                fill: white;
+    & svg {
+        width: 100%;
+        height: 100%;
+        fill: white;
 
-                &:hover {
-                    fill: red;
-                }
-            }
+        &:hover {
+            fill: red;
         }
-        & .dislike {
-            width: 1.2rem;
-            height: 1.2rem;
-            cursor: pointer;
+    }
+}
 
-            & svg {
-                width: 100%;
-                height: 100%;
-                fill: white;
+& .comment-icon {
+    width: 1.2rem;
+    height: 1.2rem;
+    cursor: pointer;
 
-                &:hover {
-                    fill: rgb(131, 0, 0);
-                }
-            }
+    & svg {
+        width: 100%;
+        height: 100%;
+        fill: white;
+
+        &:hover {
+            fill: var(--color-hover);
         }
+    }
+}
+& .dislike {
+    width: 1.2rem;
+    height: 1.2rem;
+    cursor: pointer;
+
+& svg {
+    width: 100%;
+    height: 100%;
+    fill: white;
+
+    &:hover {
+        fill: rgb(131, 0, 0);
+    }
+}
+}
