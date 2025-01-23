@@ -22,6 +22,9 @@ use Core\Routing\Router;
     <?php if (Router::isCurrentRoute(['profile', 'profile/edit', 'user/:id'])): ?>
         <link rel="stylesheet" href="/styles/profile.css">
     <?php endif ?>
+    <?php if (Router::isCurrentRoute('profile/edit')): ?>
+        <link rel="stylesheet" href="/styles/profile-edit.css">
+    <?php endif ?>
 
     <?php if (Router::isCurrentRoute(['/', 'search'])): ?>
         <link rel="stylesheet" href="/styles/feed.css">
@@ -34,6 +37,7 @@ use Core\Routing\Router;
     <?php if (Router::isCurrentRoute('post/:id')): ?>
         <link rel="stylesheet" href="/styles/post-view.css">
     <?php endif ?>
+
 </head>
 
 <body>

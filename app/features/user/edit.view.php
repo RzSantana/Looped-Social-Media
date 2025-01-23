@@ -13,8 +13,23 @@ use Core\View\View;
         </div>
 
         <div class="profile-info">
-            <h1><?= $user['user'] ?></h1>
-            <p><?= $user['description'] ?? 'No tienes ninguna descripcion, edita tu perfil para añadir una.' ?></p>
+            <input type="text"
+                name="username"
+                value="<?= $user['user'] ?>"
+                class="input"
+                placeholder="Nombre de usuario">
+
+            <input type="text"
+                name="email"
+                value="<?= $user['email'] ?>"
+                class="input"
+                placeholder="Correo electronico">
+
+            <input type="text"
+                name="description"
+                value="<?= $user['description'] ?? ''?>"
+                class="input"
+                placeholder="No tienes ninguna descripcion, edita tu perfil para añadir una">
         </div>
         <div class="continer-owner-actions">
             <div class="container-confirm">
