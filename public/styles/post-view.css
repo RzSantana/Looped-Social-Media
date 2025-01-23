@@ -7,23 +7,29 @@
         height: 100%;
 
         display: grid;
-        grid-template-columns: minmax(30rem, 40rem) minmax(20rem, 30rem);
+        grid-template-columns: minmax(30rem, 40rem) 20rem;
+        gap: 2rem;
 
         place-content: center;
     }
 
     & .image {
+        aspect-ratio: 1/1;
+
         & img {
-            border-radius: .25rem;
+            background-color: rgba(255, 255, 255, 0.2);
+            aspect-ratio: 1/1;
+            border-radius: .5rem;
             width: 100%;
             height: 100%;
         }
     }
 
-    & .content-post {
+    & .content {
         display: grid;
-        grid-template-rows: auto 1fr;
-        padding: 2rem;
+        grid-template-rows: minmax(3.5rem, auto) 1fr 3rem;
+        gap: 1rem;
+        max-height: 100%;
     }
 
     & a {
@@ -33,8 +39,9 @@
         font-weight: 500;
     }
 
-    & .description {
-        opacity: 0.6;
+    & .date {
+        opacity: .5;
+        font-size: x-small;
     }
 
     & .user {
@@ -48,18 +55,21 @@
         align-items: center;
 
         & .photo-profile {
-            width: 5rem;
-            height: 5rem;
+            width: 3.5rem;
+            height: 3.5rem;
 
             & img {
+                height: 100%;
+                width: 100%;
+
                 border-radius: 50%;
                 aspect-ratio: 1/1;
-                width: 100%;
-                height: 100%;
-                border: 3px solid transparent;
+
+                background-color: rgba(255, 255, 255, 0.2);
+                border: 3px solid transparent inset;
 
                 &:hover {
-                    border: 3px solid var(--color-base);
+                    border: 3px solid var(--color-base) inset;
                 }
             }
 
@@ -70,5 +80,149 @@
             }
         }
 
+    }
+
+    & .content-post {
+        height: 100%;
+
+        max-width: 100%;
+        max-height: 100%;
+
+        display: grid;
+        grid-template-rows: auto auto 1fr;
+        gap: 1rem;
+        overflow-x: hidden;
+
+        border-top: 1px solid rgba(255, 255, 255, 0.2);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        padding: 1rem 0;
+
+        & .actions {
+            width: 100%;
+            height: fit-content;
+
+            display: flex;
+            gap: 1.25rem;
+            justify-content: end ;
+
+            & div {
+                display: flex;
+                flex-direction: row;
+                gap: .5rem;
+                font-size: smaller;
+            }
+        }
+    }
+
+    & .content-description {
+        display: flex;
+        flex-direction: column;
+        gap: .5rem;
+
+        & .description {
+            font-size: smaller;
+            opacity: .8;
+            overflow: hidden;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            hyphens: auto;
+        }
+    }
+
+    .input-comment {
+        display: grid;
+        grid-template-columns: 2rem 1fr;
+        gap: .5rem;
+        align-items: center;
+
+        & .content-photo-profile {
+            width: 2rem;
+            height: 2rem;
+
+            & .photo-profile{
+                display: flex;
+                place-content: center;
+
+                width: 2rem;
+                height: 2rem;
+                aspect-ratio: 1/1;
+            }
+
+            & img {
+                width: 100%;
+                height: 100%;
+                aspect-ratio: 1/1;
+                border-radius: 50%;
+            }
+        }
+
+        & #comment {
+            width: 100%;
+            max-height: 3rem;
+            height: 100%;
+            padding: 0.5rem 3.2rem 0.5rem 1rem;
+            border: none;
+
+            background-color: rgba(255, 255, 255, 0.25);
+            border: 1px solid transparent;
+            border-radius: 0.2rem;
+            position: relative;
+
+            &:focus-visible {
+                outline: none;
+                border: 1px solid var(--color-active);
+            }
+        }
+
+        & #btn-comment {
+            cursor: pointer;
+
+            position: absolute;
+            right: 1rem;
+            top: .5rem;
+
+            background: none;
+            border: none;
+            color: var(--color-base);
+            filter: brightness(1.5);
+
+            font-size: small;
+            font-weight: 500;
+        }
+    }
+
+    & form {
+        position: relative;
+    }
+
+    & .comments-list {
+        width: 100%;
+        height: 100%;
+        max-height: 23.5rem;
+
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+
+        overflow-y: auto;
+        overflow-x: hidden;
+        padding-right: 0.5rem;
+
+        scrollbar-width: thin;
+        scrollbar-width: 3px;
+        scrollbar-color: var(--color-base) tranparent;
+
+        &::-webkit-scrollbar {
+            width: 3px;
+        }
+    }
+
+
+    & .no-comments {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: .8;
+        font-size: small;
     }
 }

@@ -35,11 +35,11 @@ use Core\View\View;
                 <div class="profile-actions">
                     <?php if ($isFollowing): ?>
                         <form action="/unfollow/<?= $user['id'] ?>" method="POST" class="unfollow">
-                            <button type="submit" class="btn btn-secondary">Dejar de seguir</button>
+                            <button type="submit" class="button">Dejar de seguir</button>
                         </form>
                     <?php else: ?>
                         <form action="/follow/<?= $user['id'] ?>" method="POST">
-                            <button type="submit" class="btn btn-primary">Seguir</button>
+                            <button type="submit" class="button">Seguir</button>
                         </form>
                     <?php endif; ?>
                 </div>

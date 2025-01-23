@@ -1,6 +1,7 @@
 <?php
 
 use App\Features\Auth\AuthController;
+use App\Features\Comment\CommentController;
 use App\Features\Feed\FeedController;
 use App\Features\New\NewController;
 use App\Features\Post\PostController;
@@ -70,6 +71,12 @@ Router::get('/post/like/:id', [FeedController::class, 'toggleLike'])
 Router::get('/post/dislike/:id', [FeedController::class, 'toggleDislike'])
     ->middleware(AuthMiddleware::class);
 
+// Rutas para comentarios
+Router::post('/comment', [CommentController::class, 'create'])
+    ->middleware(AuthMiddleware::class);
+
+Router::post('/comment/:id/delete', [CommentController::class, 'delete'])
+    ->middleware(AuthMiddleware::class);
 
 Router::setNotFoundCallback(function () {
     header('Location: /');

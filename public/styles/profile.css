@@ -143,6 +143,10 @@
             }
         }
 
+        & form {
+            width: 100%;
+        }
+
         & .button {
             padding: 0.8rem 2rem;
             width: 100%;

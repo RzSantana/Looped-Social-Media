@@ -2,6 +2,7 @@
 
 namespace App\Features\Post;
 
+use App\Features\Comment\CommentRepository;
 use Core\Auth\Auth;
 use Core\Database\Repository;
 use Core\Database\Database;
@@ -138,7 +139,9 @@ class PostRepository extends Repository
                 u.user as username,
                 COUNT(DISTINCT l.user_id) as likes_count,
                 COUNT(DISTINCT d.user_id) as dislikes_count,
-                COUNT(DISTINCT c.id) as comments_count
+                COUNT(DISTINCT c.id) as comments_count,
+                EXISTS(SELECT 1 FROM likes WHERE entry_id = e.id AND user_id = :current_user) as user_liked,
+                EXISTS(SELECT 1 FROM dislikes WHERE entry_id = e.id AND user_id = :current_user2) as user_disliked
             FROM entries e
             LEFT JOIN users u ON e.user_id = u.id
             LEFT JOIN likes l ON e.id = l.entry_id
@@ -148,24 +151,18 @@ class PostRepository extends Repository
             GROUP BY e.id, u.user
         ";
 
-        $posts = Database::select($query, ['postId' => $postId]);
+        $posts = Database::select($query, [
+            'postId' => $postId,
+            'current_user' => Auth::id(),
+            'current_user2' => Auth::id(),
+        ]);
+
         if (empty($posts)) {
             return null;
         }
 
         $post = $posts[0];
-
-        $commentQuery = "
-            SELECT
-                c.*,
-                u.user as username
-            FROM comments c
-            LEFT JOIN users u ON c.user_id = u.id
-            WHERE c.entry_id = :postId
-            ORDER BY c.date DESC
-        ";
-
-        $post['comments'] = Database::select($commentQuery, ['postId' => $postId]);
+        $post['comments'] = CommentRepository::getByEntry($postId);
 
         return $post;
     }
@@ -209,7 +206,7 @@ class PostRepository extends Repository
      * Elimina un "me gusta" de una entrada
      */
     public static function removeLike(int $postId, int $userId): void
-{
+    {
         Database::delete(
             "DELETE FROM likes WHERE entry_id = :post_id AND user_id = :user_id",
             ['post_id' => $postId, 'user_id' => $userId]
@@ -295,20 +292,5 @@ class PostRepository extends Repository
             Database::rollback();
             throw $e;
         }
-    }
-
-    /**
-     * Añade un comentario a una entrada
-     */
-    public static function addComment(int $postId, int $userId, string $text): int
-    {
-        return Database::insert(
-            "INSERT INTO comments (entry_id, user_id, text, date) VALUES (:post_id, :user_id, :text, NOW())",
-            [
-                'post_id' => $postId,
-                'user_id' => $userId,
-                'text' => $text
-            ]
-        );
     }
 }
