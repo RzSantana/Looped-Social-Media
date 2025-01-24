@@ -102,10 +102,11 @@ h1 {
     justify-content: start;
 }
 
-.input {
+.input-auth {
     position: relative;
     min-width: 16rem;
     max-width: 17rem;
+
     & label {
         position: absolute;
         left: 0.8rem;
@@ -152,29 +153,6 @@ h1 {
     display: flex;
     gap: 0.5rem;
     align-items: center;
-
-    & input {
-        cursor: pointer;
-        appearance: none;
-        width: 1rem;
-        height: 1rem;
-        background-color: var(--bg-color-aph40);
-        border: 1px solid var(--color-active);
-        border-radius: 0.1rem;
-
-        &:checked {
-            background-color: var(--bg-color-aph60);
-            border-color: var(--color-active);
-        }
-
-        &:checked::before {
-            content: '✔';
-            display: block;
-            text-align: center;
-            color: white;
-            font-size: 0.7rem;
-        }
-    }
 
     & label {
         font-size: smaller;

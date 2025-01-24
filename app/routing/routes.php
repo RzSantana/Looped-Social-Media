@@ -51,6 +51,8 @@ Router::get('/profile', [UserController::class, 'showProfile'])
 Router::get('/profile/edit', [UserController::class, 'showProfileEdit'])
     ->layout('main')
     ->middleware(AuthMiddleware::class);
+Router::post('/profile/edit', [UserController::class, 'editProfile'])
+    ->middleware(AuthMiddleware::class);
 Router::get('/user/:id', [UserController::class, 'showUserProfile'])
     ->layout('main')
     ->middleware(AuthMiddleware::class);

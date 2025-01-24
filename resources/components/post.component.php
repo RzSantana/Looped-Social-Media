@@ -1,27 +1,33 @@
 <?php
 
 use Core\View\View;
+
+$selected = isset($selected) ? $selected : false;
 ?>
 
 <div class="post">
     <div class="image">
-        <a href="/post/<?= $post['id'] ?>">
+        <?php if ($selected): ?>
+            <a href="/post/<?= $post['id'] ?>">
+            <?php endif; ?>
             <?php if (isset($post['photo'])): ?>
                 <img src="<?= $post['photo'] ?>" alt="">
             <?php else: ?>
                 <div class="not-image"></div>
-            <?php endif ?>
-        </a>
+            <?php endif; ?>
+            <?php if ($selected): ?>
+            </a>
+        <?php endif; ?>
     </div>
     <div class="info-post">
         <div class="user">
-            <a href="/user/<?= $post['user_id'] ?>" class="photo-profile">
+            <div class="photo-profile">
                 <?php if (isset($post['photoProfile'])): ?>
                     <img src="<?= $post['photoProfile'] ?>" alt="">
                 <?php else: ?>
                     <div class="not-image"></div>
-                <?php endif ?>
-            </a>
+                <?php endif; ?>
+            </div>
             <div class="data">
                 <div>
                     <a href="/user/<?= $post['user_id'] ?>" class="username">
@@ -44,12 +50,10 @@ use Core\View\View;
                 <div><?= $post['likes_count'] ?? '0' ?></div>
                 <?= View::component('icons/like', ['id' => $post['id'], 'liked' => $post['user_liked']]) ?>
             </div>
-
             <div class="action">
                 <div><?= $post['dislikes_count'] ?? '0' ?></div>
                 <?= View::component('icons/dislike', ['id' => $post['id'], 'disliked' => $post['user_disliked']]) ?>
             </div>
-
             <div class="action">
                 <div><?= $post['comments_count'] ?? '0' ?></div>
                 <?= View::component('icons/comment', ['id' => $post['id']]) ?>

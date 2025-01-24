@@ -21,12 +21,12 @@
                 </div>
                 <?= $user['user'] ?? '' ?>
             </div>
-            <div class="input">
-                <textarea name="caption" 
-                    placeholder="Escribe aqui el pie de foto o video..." 
-                    autocomplete="none" 
-                    rows="20" 
-                    maxlength="100" 
+            <div class="input-new-post">
+                <textarea name="caption"
+                    placeholder="Escribe aqui el pie de foto o video..."
+                    autocomplete="none"
+                    rows="20"
+                    maxlength="100"
                     class="<?= isset($errors['text']) ? 'input-error' : '' ?>"><?= !empty($text) ? $text . '</textarea>' : '</textarea>' ?>
                 <?php if (isset($errors['text'])): ?>
                     <div class="error-message">

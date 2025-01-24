@@ -39,6 +39,15 @@ $post['date'] = $date->format('d M Y, H:i');
                 </div>
             </div>
             <div class="content-post">
+                <div class="content-description">
+                    <div class="description">
+                        <?= $post['text'] ?? 'Descripción' ?>
+                    </div>
+                    <div class="date">
+                        <?= $post['date'] ?>
+                    </div>
+                </div>
+
                 <div class="actions">
                     <div class="likes">
                         <span><?= $post['likes_count'] ?? 0 ?></span>
@@ -47,15 +56,6 @@ $post['date'] = $date->format('d M Y, H:i');
                     <div class="dislikes">
                         <span><?= $post['dislikes_count'] ?? 0 ?></span>
                         <?= View::component('icons/dislike', ['id' => $post['id'], 'disliked' => $post['user_disliked'] ?? false]) ?>
-                    </div>
-                </div>
-
-                <div class="content-description">
-                    <div class="description">
-                        <?= $post['text'] ?? 'Descripción' ?>
-                    </div>
-                    <div class="date">
-                        <?= $post['date'] ?>
                     </div>
                 </div>
 
@@ -87,7 +87,12 @@ $post['date'] = $date->format('d M Y, H:i');
 
                 <form action="/comment" method="post">
                     <input type="hidden" name="post_id" value="<?= $post['id'] ?>">
-                    <input id="comment" type="text" name="text" placeholder="Escribe un comentario..." autocomplete="off">
+                    <input id="comment"
+                        type="text"
+                        class="input"
+                        name="text"
+                        placeholder="Escribe un comentario..."
+                        autocomplete="off">
                     <button id="btn-comment" type="submit">Post</button>
                 </form>
             </div>

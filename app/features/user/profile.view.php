@@ -49,7 +49,7 @@ use Core\View\View;
         <?php if ($isOwnProfile): ?>
             <div class="continer-owner-actions">
                 <div class="container-edit">
-                    <a href="/profile/edit" class="button">Editar Perfil</a>
+                    <a href="/profile/edit" class="button">Editar</a>
                 </div>
                 <div class="container-logout">
                     <a href="/logout" class="button">Cerrar Sessión</a>

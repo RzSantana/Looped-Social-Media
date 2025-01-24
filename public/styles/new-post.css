@@ -93,7 +93,7 @@
             }
         }
 
-        & .input {
+        & .input-new-post {
             width: 100%;
             display: flex;
             flex-direction: column;

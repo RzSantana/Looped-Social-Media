@@ -65,7 +65,12 @@ use Core\Routing\Router;
                 <?php if (isset($data['search'])): ?>
                     <li>
                         <form action="/search" method="get">
-                            <input type="text" name="user" id="search" placeholder="Buscar" value="<?= $data['valueSearch'] ?>">
+                            <input type="text"
+                                name="user"
+                                class="input"
+                                id="search"
+                                placeholder="Buscar"
+                                value="<?= $data['valueSearch'] ?>">
                         </form>
                     </li>
                 <?php endif; ?>

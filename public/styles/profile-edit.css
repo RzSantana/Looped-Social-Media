@@ -1,3 +1,31 @@
 body {
     border: 5px solid var(--bg-color);
 }
+
+.profile-edit {
+    & .header {
+       & .profile-info {
+            padding: 0rem 0rem !important;
+            width: 100%;
+        }
+    }
+
+    & button {
+        border: none;
+    }
+
+    & .post {
+        position: relative;
+    }
+
+    & .post-select {
+        z-index: 2;
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+
+        width: 1rem;
+        height: 1rem;
+        
+    }
+}
