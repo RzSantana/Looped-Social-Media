@@ -197,7 +197,7 @@ class UserRepository extends Repository
      */
     public static function isFollowing(int $userId, int $followedId): bool
     {
-        $query = "SELECT COUNT(*) as count FROM follows 
+        $query = "SELECT COUNT(*) as count FROM follows
                  WHERE user_id = :userId AND user_followed = :followedId";
         $result = Database::select($query, [
             'userId' => $userId,
@@ -275,8 +275,7 @@ class UserRepository extends Repository
             return $user;
         } catch (DatabaseException $e) {
             Database::rollback();
-            throw new Exception("Error: " . $e->getMessage());
-            ;
+            throw new Exception("Error: " . $e->getMessage());;
         }
     }
 }

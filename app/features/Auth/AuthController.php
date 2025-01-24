@@ -39,9 +39,13 @@ class AuthController extends Controller
         try {
             $user = UserRepository::findByUsername($username);
 
+            if (!$user) {
+                $user = UserRepository::findByEmail($username);
+            }
+
             if (!$user || !password_verify($password, $user['password'])) {
                 Session::flash('errors', [
-                    'username' => 'Usuario incorrecto',
+                    'username' => 'Usuario o email incorrecto',
                     'password' => 'Contraseña incorrecta'
                 ]);
                 Session::flash('username', $username);

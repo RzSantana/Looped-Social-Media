@@ -26,7 +26,7 @@
                         id="username"
                         name="username"
                         value="<?= htmlspecialchars($username) ?>"
-                        placeholder="Nombre de usuario">
+                        placeholder="Nombre de usuario o email">
                     <div class="info-input">
                         <?php if (isset($errors['username'])): ?>
                             <div class="icon-error">
